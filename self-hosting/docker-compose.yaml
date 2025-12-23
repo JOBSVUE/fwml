@@ -420,7 +420,7 @@ services:
     container_name: mongodb
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${SERVICE_USER_MONGO}
-      - MONGO_INITDB_ROOT_PASSWORD=${SERVICE_PASSWORD_64_MONGO}
+      - MONGO_INITDB_ROOT_PASSWORD=${SERVICE_PASSWORD_MONGO}
     restart: unless-stopped
     volumes:
       - forward-mongo-data:/data/db

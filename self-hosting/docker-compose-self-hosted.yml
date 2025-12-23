@@ -6,7 +6,7 @@ services:
     hostname: ${DOMAIN}
     command: ["node", "web.js"]
     volumes:
-      - ./ssl:/app/ssl/
+      - forward-ssl-data:/app/ssl/
       - ./.env:/app/.env
     healthcheck:
       test: "curl -ksL -o /dev/null https://127.0.0.1"
@@ -37,7 +37,7 @@ services:
     hostname: api.${DOMAIN}
     command: ["node", "api.js"]
     volumes:
-      - ./ssl:/app/ssl/
+      - forward-ssl-data:/app/ssl/
       - ./.env:/app/.env
     healthcheck:
       test: "curl -ksL -o /dev/null https://127.0.0.1:4000/v1/test"
@@ -63,7 +63,7 @@ services:
     network_mode: host
     command: ["node", "bree.js"]
     volumes:
-      - ./ssl:/app/ssl/
+      - forward-ssl-data:/app/ssl/
       - ./.env:/app/.env
     restart: unless-stopped
     extra_hosts:
@@ -83,8 +83,8 @@ services:
     hostname: imap.${DOMAIN}
     command: ["node", "imap.js"]
     volumes:
-      - ./sqlite-data:/mnt/${SQLITE_STORAGE_PATH}
-      - ./ssl:/app/ssl/
+      - forward-sql-data:/mnt/${SQLITE_STORAGE_PATH}
+      - forward-ssl-data:/app/ssl/
       - ./.env:/app/.env
     healthcheck:
       test: "nc -z 127.0.0.1 993"
@@ -112,8 +112,8 @@ services:
     hostname: pop3.${DOMAIN}
     command: ["node", "pop3.js"]
     volumes:
-      - ./sqlite-data:/mnt/${SQLITE_STORAGE_PATH}
-      - ./ssl:/app/ssl/
+      - forward-sql-data:/mnt/${SQLITE_STORAGE_PATH}
+      - forward-ssl-data:/app/ssl/
       - ./.env:/app/.env
     healthcheck:
       test: "nc -z 127.0.0.1 995"
@@ -140,7 +140,7 @@ services:
     hostname: smtp.${DOMAIN}
     command: ["node", "smtp.js"]
     volumes:
-      - ./ssl:/app/ssl/
+      - forward-ssl-data:/app/ssl/
       - ./.env:/app/.env
     healthcheck:
       test: "nc -z 127.0.0.1 465"
@@ -166,7 +166,7 @@ services:
     command: ["node", "smtp-bree.js"]
     volumes:
       - ./.env:/app/.env
-      - ./ssl:/app/ssl/
+      - forward-ssl-data:/app/ssl/
     restart: unless-stopped
     extra_hosts:
       - "${DOMAIN}:127.0.0.1"
@@ -187,7 +187,7 @@ services:
     network_mode: host
     restart: unless-stopped
     volumes:
-      - mongo-data:/data/db
+      - forward-mongo-data:/data/db
       - ./mongo-backups:/backups
 
   redis:
@@ -196,7 +196,7 @@ services:
     network_mode: host
     restart: unless-stopped
     volumes:
-      - ./redis-data:/data
+      - forward-redis-data:/data
     env_file:
       - .env
 
@@ -207,8 +207,8 @@ services:
     hostname: sqlite.${DOMAIN}
     command: ["node", "sqlite.js"]
     volumes:
-      - ./sqlite-data:/mnt/${SQLITE_STORAGE_PATH}
-      - ./ssl:/app/ssl/
+      - forward-sql-data:/mnt/${SQLITE_STORAGE_PATH}
+      - forward-ssl-data:/app/ssl/
       - ./.env:/app/.env
     healthcheck:
       test: "nc -z 127.0.0.1 3456"
@@ -235,8 +235,8 @@ services:
     hostname: sqlite.${DOMAIN}
     command: ["node", "sqlite-bree.js"]
     volumes:
-      - ./ssl:/app/ssl/
-      - /mnt/${SQLITE_STORAGE_PATH}:/mnt/${SQLITE_STORAGE_PATH}
+      - forward-ssl-data:/app/ssl/
+      - forward-sql-data:/mnt/${SQLITE_STORAGE_PATH}
       - ./.env:/app/.env
     restart: unless-stopped
     extra_hosts:
@@ -259,8 +259,8 @@ services:
     command: ["node", "mx.js"]
     hostname: mx.${DOMAIN}
     volumes:
-      - ./ssl:/app/ssl/
-      - /mnt/${SQLITE_STORAGE_PATH}:/mnt/${SQLITE_STORAGE_PATH}
+      - forward-ssl-data:/app/ssl/
+      - forward-sql-data:/mnt/${SQLITE_STORAGE_PATH}
       - ./.env:/app/.env
     healthcheck:
       test: "nc -z 127.0.0.1 25"
@@ -291,7 +291,7 @@ services:
     command: ["node", "caldav.js"]
     volumes:
       - ./.env:/app/.env
-      - ./ssl:/app/ssl/
+      - forward-ssl-data:/app/ssl/
     healthcheck:
       test: "nc -z 127.0.0.1 5000"
       interval: 30s
@@ -319,7 +319,7 @@ services:
     command: ["node", "carddav.js"]
     volumes:
       - ./.env:/app/.env
-      - ./ssl:/app/ssl/
+      - forward-ssl-data:/app/ssl/
     healthcheck:
       test: "nc -z 127.0.0.1 6000"
       interval: 30s
@@ -348,7 +348,9 @@ services:
   #   entrypoint: "/bin/sh -c 'trap exit TERM; while :; do sleep 6h & wait $!; certbot renew; done;'"
 
 volumes:
-  mongo-data:
-  redis-data:
+  forward-mongo-data:
+  forward-redis-data:
+  forward-sql-data:
+  forward-ssl-data:
   # certs:
   # certbot-logs:

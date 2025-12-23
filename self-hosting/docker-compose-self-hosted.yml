@@ -13,7 +13,7 @@ services:
         read_only: true
       - ./.env:/app/.env
     healthcheck:
-      test: "curl -ksL -o /dev/null https://127.0.0.1:${WEB_PORT:-3000}"
+      test: "curl -ksL -o /dev/null https://127.0.0.1"
       interval: 30s
       timeout: 30s
       retries: 3
@@ -128,7 +128,6 @@ services:
       - "imap.${SERVICE_FQDN_WEB}:127.0.0.1"
       - "smtp.${SERVICE_FQDN_WEB}:127.0.0.1"
       - "sqlite.${SERVICE_FQDN_WEB}:127.0.0.1"
-      - "pop3.${SERVICE_FQDN_WEB}:127.0.0.1"
     depends_on:
       mongodb:
         condition: service_started
@@ -181,14 +180,13 @@ services:
         read_only: true
       - ./.env:/app/.env
     healthcheck:
-      test: "curl -ksL -o /dev/null https://127.0.0.1:${API_PORT:-4000}/v1/test"
+      test: "curl -ksL -o /dev/null https://127.0.0.1:4000/v1/test"
       interval: 30s
       timeout: 30s
       retries: 3
     restart: unless-stopped
     extra_hosts:
       - "${SERVICE_FQDN_WEB}:127.0.0.1"
-      - "api.${SERVICE_FQDN_WEB}:127.0.0.1"
       - "smtp.${SERVICE_FQDN_WEB}:127.0.0.1"
       - "imap.${SERVICE_FQDN_WEB}:127.0.0.1"
     depends_on:
@@ -274,14 +272,13 @@ services:
         read_only: true
       - ./.env:/app/.env
     healthcheck:
-      test: "nc -z 127.0.0.1 ${IMAP_PORT:-993}"
+      test: "nc -z 127.0.0.1 993"
       interval: 30s
       timeout: 30s
       retries: 3
     restart: unless-stopped
     extra_hosts:
       - "${SERVICE_FQDN_WEB}:127.0.0.1"
-      - "imap.${SERVICE_FQDN_WEB}:127.0.0.1"
       - "smtp.${SERVICE_FQDN_WEB}:127.0.0.1"
       - "sqlite.${SERVICE_FQDN_WEB}:127.0.0.1"
     depends_on:
@@ -326,16 +323,14 @@ services:
         read_only: true
       - ./.env:/app/.env
     healthcheck:
-      test: "nc -z 127.0.0.1 ${POP3_PORT:-995}"
+      test: "nc -z 127.0.0.1 995"
       interval: 30s
       timeout: 30s
       retries: 3
     restart: unless-stopped
     extra_hosts:
       - "${SERVICE_FQDN_WEB}:127.0.0.1"
-      - "pop3.${SERVICE_FQDN_WEB}:127.0.0.1"
       - "smtp.${SERVICE_FQDN_WEB}:127.0.0.1"
-      - "sqlite.${SERVICE_FQDN_WEB}:127.0.0.1"
     depends_on:
       mongodb:
         condition: service_started
@@ -387,7 +382,6 @@ services:
     restart: unless-stopped
     extra_hosts:
       - "${SERVICE_FQDN_WEB}:127.0.0.1"
-      - "smtp.${SERVICE_FQDN_WEB}:127.0.0.1"
       - "imap.${SERVICE_FQDN_WEB}:127.0.0.1"
       - "sqlite.${SERVICE_FQDN_WEB}:127.0.0.1"
     depends_on:
@@ -459,11 +453,7 @@ services:
     restart: unless-stopped
     volumes:
       - forward-redis-data:/data
-    healthcheck:
-      test: "redis-cli --raw incr ping || exit 1"
-      interval: 30s
-      timeout: 30s
-      retries: 3
+
 
   sqlite:
     image: ghcr.io/forwardemail/forwardemail.net-selfhosted:latest
@@ -498,14 +488,13 @@ services:
         read_only: true
       - ./.env:/app/.env
     healthcheck:
-      test: "nc -z 127.0.0.1 ${SQLITE_PORT:-3456}"
+      test: "nc -z 127.0.0.1 3456"
       interval: 30s
       timeout: 30s
       retries: 3
     restart: unless-stopped
     extra_hosts:
       - "${SERVICE_FQDN_WEB}:127.0.0.1"
-      - "sqlite.${SERVICE_FQDN_WEB}:127.0.0.1"
       - "smtp.${SERVICE_FQDN_WEB}:127.0.0.1"
       - "imap.${SERVICE_FQDN_WEB}:127.0.0.1"
     depends_on:
@@ -592,7 +581,6 @@ services:
     restart: unless-stopped
     extra_hosts:
       - "${SERVICE_FQDN_WEB}:127.0.0.1"
-      - "mx.${SERVICE_FQDN_WEB}:127.0.0.1"
       - "caldav.${SERVICE_FQDN_WEB}:127.0.0.1"
       - "carddav.${SERVICE_FQDN_WEB}:127.0.0.1"
       - "imap.${SERVICE_FQDN_WEB}:127.0.0.1"
@@ -644,14 +632,13 @@ services:
         target: /app/ssl
         read_only: true
     healthcheck:
-      test: "nc -z 127.0.0.1 ${CALDAV_PORT:-5000}"
+      test: "nc -z 127.0.0.1 5000"
       interval: 30s
       timeout: 30s
       retries: 3
     restart: unless-stopped
     extra_hosts:
       - "${SERVICE_FQDN_WEB}:127.0.0.1"
-      - "caldav.${SERVICE_FQDN_WEB}:127.0.0.1"
       - "smtp.${SERVICE_FQDN_WEB}:127.0.0.1"
       - "imap.${SERVICE_FQDN_WEB}:127.0.0.1"
       - "sqlite.${SERVICE_FQDN_WEB}:127.0.0.1"
@@ -701,14 +688,13 @@ services:
         target: /app/ssl
         read_only: true
     healthcheck:
-      test: "nc -z 127.0.0.1 ${CARDDAV_PORT:-6000}"
+      test: "nc -z 127.0.0.1 6000"
       interval: 30s
       timeout: 30s
       retries: 3
     restart: unless-stopped
     extra_hosts:
       - "${SERVICE_FQDN_WEB}:127.0.0.1"
-      - "carddav.${SERVICE_FQDN_WEB}:127.0.0.1"
       - "smtp.${SERVICE_FQDN_WEB}:127.0.0.1"
       - "imap.${SERVICE_FQDN_WEB}:127.0.0.1"
       - "sqlite.${SERVICE_FQDN_WEB}:127.0.0.1"

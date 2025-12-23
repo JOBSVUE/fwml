@@ -248,7 +248,7 @@ services:
     image: ghcr.io/forwardemail/forwardemail.net-selfhosted:latest
     container_name: sqlite_bree
     network_mode: host
-    hostname: sqlite.${DOMAIN}
+    hostname: sqlite.${SERVICE_FQDN_WEB}
     command: ["node", "sqlite-bree.js"]
     volumes:
       - forward-ssl-data:/app/ssl/

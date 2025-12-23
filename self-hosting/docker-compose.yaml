@@ -118,6 +118,7 @@ services:
       - WEB_REDIS_HOST=${WEB_REDIS_HOST:-redis}
       - WEB_REDIS_PORT=${WEB_REDIS_PORT:-6379}
       - WEB_REDIS_MAX_RETRY_LOADING_TIME=${WEB_REDIS_MAX_RETRY_LOADING_TIME:-1000}
+      - PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
     extra_hosts:
       - "${SERVICE_FQDN_WEB}:127.0.0.1"
       - "api.${SERVICE_FQDN_WEB}:127.0.0.1"

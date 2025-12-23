@@ -7,7 +7,10 @@ services:
     hostname: ${SERVICE_FQDN_WEB}
     command: ["node", "web.js"]
     volumes:
-      - forward-ssl-data:/app/ssl/
+      - type: bind
+        source: /data/docker-volumes/certs/dnides
+        target: /app/ssl
+        read_only: true
       - ./.env:/app/.env
     healthcheck:
       test: "curl -ksL -o /dev/null https://127.0.0.1:${WEB_PORT:-3000}"
@@ -172,7 +175,10 @@ services:
       - API_REDIS_PORT=${API_REDIS_PORT:-6379}
     command: ["node", "api.js"]
     volumes:
-      - forward-ssl-data:/app/ssl/
+      - type: bind
+        source: /data/docker-volumes/certs/dnides
+        target: /app/ssl
+        read_only: true
       - ./.env:/app/.env
     healthcheck:
       test: "curl -ksL -o /dev/null https://127.0.0.1:${API_PORT:-4000}/v1/test"
@@ -218,7 +224,10 @@ services:
       - BREE_REDIS_HOST=${BREE_REDIS_HOST:-redis}
       - BREE_REDIS_PORT=${BREE_REDIS_PORT:-6379}
     volumes:
-      - forward-ssl-data:/app/ssl/
+      - type: bind
+        source: /data/docker-volumes/certs/dnides
+        target: /app/ssl
+        read_only: true
       - ./.env:/app/.env
     restart: unless-stopped
     exclude_from_hc: false
@@ -259,7 +268,10 @@ services:
     command: ["node", "imap.js"]
     volumes:
       - forward-sql-data:/mnt/storage_do_1
-      - forward-ssl-data:/app/ssl/
+      - type: bind
+        source: /data/docker-volumes/certs/dnides
+        target: /app/ssl
+        read_only: true
       - ./.env:/app/.env
     healthcheck:
       test: "nc -z 127.0.0.1 ${IMAP_PORT:-993}"
@@ -308,7 +320,10 @@ services:
     command: ["node", "pop3.js"]
     volumes:
       - forward-sql-data:/mnt/storage_do_1
-      - forward-ssl-data:/app/ssl/
+      - type: bind
+        source: /data/docker-volumes/certs/dnides
+        target: /app/ssl
+        read_only: true
       - ./.env:/app/.env
     healthcheck:
       test: "nc -z 127.0.0.1 ${POP3_PORT:-995}"
@@ -359,7 +374,10 @@ services:
       - MAX_RECIPIENTS=${MAX_RECIPIENTS:-50}
     command: ["node", "smtp.js"]
     volumes:
-      - forward-ssl-data:/app/ssl/
+      - type: bind
+        source: /data/docker-volumes/certs/dnides
+        target: /app/ssl
+        read_only: true
       - ./.env:/app/.env
     healthcheck:
       test: "nc -z 127.0.0.1 465"
@@ -399,7 +417,10 @@ services:
     command: ["node", "smtp-bree.js"]
     volumes:
       - ./.env:/app/.env
-      - forward-ssl-data:/app/ssl/
+      - type: bind
+        source: /data/docker-volumes/certs/dnides
+        target: /app/ssl
+        read_only: true
     restart: unless-stopped
     exclude_from_hc: false
     extra_hosts:
@@ -471,7 +492,10 @@ services:
     command: ["node", "sqlite.js"]
     volumes:
       - forward-sql-data:/mnt/storage_do_1
-      - forward-ssl-data:/app/ssl/
+      - type: bind
+        source: /data/docker-volumes/certs/dnides
+        target: /app/ssl
+        read_only: true
       - ./.env:/app/.env
     healthcheck:
       test: "nc -z 127.0.0.1 ${SQLITE_PORT:-3456}"
@@ -512,7 +536,10 @@ services:
       - REDIS_USERNAME=${REDIS_USERNAME:-default}
     command: ["node", "sqlite-bree.js"]
     volumes:
-      - forward-ssl-data:/app/ssl/
+      - type: bind
+        source: /data/docker-volumes/certs/dnides
+        target: /app/ssl
+        read_only: true
       - forward-sql-data:/mnt/storage_do_1
       - ./.env:/app/.env
     restart: unless-stopped
@@ -551,7 +578,10 @@ services:
       - REDIS_USERNAME=${REDIS_USERNAME:-default}
       - MX_PORT=${MX_PORT:-2525}
     volumes:
-      - forward-ssl-data:/app/ssl/
+      - type: bind
+        source: /data/docker-volumes/certs/dnides
+        target: /app/ssl
+        read_only: true
       - forward-sql-data:/mnt/storage_do_1
       - ./.env:/app/.env
     healthcheck:
@@ -609,7 +639,10 @@ services:
     command: ["node", "caldav.js"]
     volumes:
       - ./.env:/app/.env
-      - forward-ssl-data:/app/ssl/
+      - type: bind
+        source: /data/docker-volumes/certs/dnides
+        target: /app/ssl
+        read_only: true
     healthcheck:
       test: "nc -z 127.0.0.1 ${CALDAV_PORT:-5000}"
       interval: 30s
@@ -663,7 +696,10 @@ services:
     command: ["node", "carddav.js"]
     volumes:
       - ./.env:/app/.env
-      - forward-ssl-data:/app/ssl/
+      - type: bind
+        source: /data/docker-volumes/certs/dnides
+        target: /app/ssl
+        read_only: true
     healthcheck:
       test: "nc -z 127.0.0.1 ${CARDDAV_PORT:-6000}"
       interval: 30s

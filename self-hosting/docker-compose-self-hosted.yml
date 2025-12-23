@@ -1,29 +1,122 @@
+version: '3.8'
+
 services:
   web:
     image: ghcr.io/forwardemail/forwardemail.net-selfhosted:latest
     container_name: web
-    network_mode: host
-    hostname: ${SERVICE_FQDN_WEB}
+    hostname: ${SERVICE_FQDN_WEB:-localhost}
     command: ["node", "web.js"]
     volumes:
       - forward-ssl-data:/app/ssl/
       - ./.env:/app/.env
     healthcheck:
-      test: "curl -ksL -o /dev/null https://127.0.0.1"
+      test: "curl -ksL -o /dev/null https://127.0.0.1:${WEB_PORT:-3000}"
       interval: 30s
       timeout: 30s
       retries: 3
     restart: unless-stopped
     environment:
-      - DOMAIN=${SERVICE_FQDN_WEB}
-    extra_hosts:
-      - "${SERVICE_FQDN_WEB}:127.0.0.1"
-      - "api.${SERVICE_FQDN_WEB}:127.0.0.1"
-      - "caldav.${SERVICE_FQDN_WEB}:127.0.0.1"
-      - "carddav.${SERVICE_FQDN_WEB}:127.0.0.1"
-      - "imap.${SERVICE_FQDN_WEB}:127.0.0.1"
-      - "smtp.${SERVICE_FQDN_WEB}:127.0.0.1"
-      - "sqlite.${SERVICE_FQDN_WEB}:127.0.0.1"
+      - DOMAIN=${SERVICE_FQDN_WEB:?}
+      - NODE_ENV=${NODE_ENV:-production}
+      - HTTP_PROTOCOL=${HTTP_PROTOCOL:-https}
+      - HELPER_ENCRYPTION_KEY=${HELPER_ENCRYPTION_KEY:-${SERVICE_BASE64_WEB}}
+      - SRS_SECRET=${SRS_SECRET:-${SERVICE_BASE64_64_WEB}}
+      - WEBHOOK_SIGNATURE_KEY=${WEBHOOK_SIGNATURE_KEY:-${SERVICE_BASE64_128_WEB}}
+      - TXT_ENCRYPTION_KEY=${TXT_ENCRYPTION_KEY:-${SERVICE_BASE64_WEB}}
+      - MONGO_USER=${MONGO_USER:?${SERVICE_USER_MONGO}}
+      - MONGO_PASS=${MONGO_PASS:?${SERVICE_PASSWORD_64_MONGO}}
+      - MONGO_HOST=${MONGO_HOST:-mongodb}
+      - MONGO_PORT=${MONGO_PORT:-27017}
+      - MONGO_NAME=${MONGO_NAME:-forwardemail_production}
+      - MONGO_URI=${MONGO_URI:-mongodb://${SERVICE_USER_MONGO}:${SERVICE_PASSWORD_64_MONGO}@mongodb:27017/forwardemail_production?authSource=admin}
+      - REDIS_PASSWORD=${REDIS_PASSWORD:?${SERVICE_PASSWORD_64_REDIS}}
+      - REDIS_HOST=${REDIS_HOST:-redis}
+      - REDIS_PORT=${REDIS_PORT:-6379}
+      - REDIS_USERNAME=${REDIS_USERNAME:-default}
+      - WEB_HOST=${WEB_HOST:-${SERVICE_FQDN_WEB}}
+      - WEB_PORT=${WEB_PORT:-3000}
+      - WEB_PROTOCOL=${WEB_PROTOCOL:-https}
+      - WEB_URL=${WEB_URL:-https://${SERVICE_FQDN_WEB}}
+      - WEB_SSL_KEY_PATH=${WEB_SSL_KEY_PATH:-/app/ssl/key.pem}
+      - WEB_SSL_CERT_PATH=${WEB_SSL_CERT_PATH:-/app/ssl/cert.pem}
+      - WEB_SSL_CA_PATH=${WEB_SSL_CA_PATH:-/app/ssl/ca.pem}
+      - API_HOST=${API_HOST:-api.${SERVICE_FQDN_WEB}}
+      - API_PORT=${API_PORT:-4000}
+      - API_PROTOCOL=${API_PROTOCOL:-https}
+      - API_URL=${API_URL:-https://api.${SERVICE_FQDN_WEB}}
+      - SMTP_HOST=${SMTP_HOST:-smtp.${SERVICE_FQDN_WEB}}
+      - SMTP_PORT=${SMTP_PORT:-2587}
+      - IMAP_HOST=${IMAP_HOST:-imap.${SERVICE_FQDN_WEB}}
+      - IMAP_PORT=${IMAP_PORT:-2993}
+      - POP3_HOST=${POP3_HOST:-pop3.${SERVICE_FQDN_WEB}}
+      - POP3_PORT=${POP3_PORT:-2995}
+      - CALDAV_HOST=${CALDAV_HOST:-caldav.${SERVICE_FQDN_WEB}}
+      - CALDAV_PORT=${CALDAV_PORT:-5000}
+      - CALDAV_URL=${CALDAV_URL:-https://caldav.${SERVICE_FQDN_WEB}}
+      - CARDDAV_HOST=${CARDDAV_HOST:-carddav.${SERVICE_FQDN_WEB}}
+      - CARDDAV_PORT=${CARDDAV_PORT:-6000}
+      - CARDDAV_URL=${CARDDAV_URL:-https://carddav.${SERVICE_FQDN_WEB}}
+      - SQLITE_HOST=${SQLITE_HOST:-sqlite.${SERVICE_FQDN_WEB}}
+      - SQLITE_PORT=${SQLITE_PORT:-3456}
+      - SQLITE_STORAGE_PATH=${SQLITE_STORAGE_PATH:-storage_do_1}
+      - APP_NAME=${APP_NAME:-Forward Email}
+      - APP_COLOR=${APP_COLOR:-#20C1ED}
+      - TRANSPORT_DEBUG=${TRANSPORT_DEBUG:-false}
+      - SEND_EMAIL=${SEND_EMAIL:-false}
+      - PREVIEW_EMAIL=${PREVIEW_EMAIL:-true}
+      - EMAIL_ABUSE=${EMAIL_ABUSE:-abuse@${SERVICE_FQDN_WEB}}
+      - EMAIL_SECURITY=${EMAIL_SECURITY:-security@${SERVICE_FQDN_WEB}}
+      - EMAIL_FRIENDLY_FROM=${EMAIL_FRIENDLY_FROM:-no-reply@${SERVICE_FQDN_WEB}}
+      - EMAIL_DEFAULT_FROM_EMAIL=${EMAIL_DEFAULT_FROM_EMAIL:-support@${SERVICE_FQDN_WEB}}
+      - EMAIL_DEFAULT_FROM=${EMAIL_DEFAULT_FROM:-Forward Email <support@${SERVICE_FQDN_WEB}>}
+      - EMAIL_ALERTS_FROM_EMAIL=${EMAIL_ALERTS_FROM_EMAIL:-alerts@${SERVICE_FQDN_WEB}}
+      - EMAIL_ALERTS_FROM=${EMAIL_ALERTS_FROM:-Forward Email <alerts@${SERVICE_FQDN_WEB}>}
+      - REMOVED_EMAIL_DOMAIN=${REMOVED_EMAIL_DOMAIN:-removed.${SERVICE_FQDN_WEB}}
+      - AXE_SHOW_STACK=${AXE_SHOW_STACK:-true}
+      - AXE_SILENT=${AXE_SILENT:-false}
+      - AXE_SHOW_META=${AXE_SHOW_META:-true}
+      - AXE_APP_INFO=${AXE_APP_INFO:-true}
+      - AXE_OMIT_META_FIELDS=${AXE_OMIT_META_FIELDS:-app.os,app.cluster,app.worker_threads,app.pid,app.version}
+      - SUPPORT_REQUEST_MAX_LENGTH=${SUPPORT_REQUEST_MAX_LENGTH:-5000}
+      - ERROR_HANDLER_BASE_URL=${ERROR_HANDLER_BASE_URL:-https://${SERVICE_FQDN_WEB}}
+      - I18N_SYNC_FILES=${I18N_SYNC_FILES:-false}
+      - I18N_AUTO_RELOAD=${I18N_AUTO_RELOAD:-false}
+      - I18N_UPDATE_FILES=${I18N_UPDATE_FILES:-false}
+      - AUTH_LOCAL_ENABLED=${AUTH_LOCAL_ENABLED:-true}
+      - AUTH_BASIC_ENABLED=${AUTH_BASIC_ENABLED:-false}
+      - AUTH_APPLE_ENABLED=${AUTH_APPLE_ENABLED:-false}
+      - AUTH_GOOGLE_ENABLED=${AUTH_GOOGLE_ENABLED:-false}
+      - AUTH_GITHUB_ENABLED=${AUTH_GITHUB_ENABLED:-false}
+      - AUTH_OTP_ENABLED=${AUTH_OTP_ENABLED:-false}
+      - AUTH_WEBAUTHN_ENABLED=${AUTH_WEBAUTHN_ENABLED:-true}
+      - AUTH_UBUNTU_ENABLED=${AUTH_UBUNTU_ENABLED:-false}
+      - UBUNTU_CALLBACK_URL=${UBUNTU_CALLBACK_URL:-https://${SERVICE_FQDN_WEB}/auth/ubuntu/ok}
+      - UBUNTU_REALM=${UBUNTU_REALM:-https://${SERVICE_FQDN_WEB}}
+      - APPLE_CALLBACK_URL=${APPLE_CALLBACK_URL:-https://${SERVICE_FQDN_WEB}/auth/apple/ok}
+      - GOOGLE_CALLBACK_URL=${GOOGLE_CALLBACK_URL:-https://${SERVICE_FQDN_WEB}/auth/google/ok}
+      - GITHUB_CALLBACK_URL=${GITHUB_CALLBACK_URL:-https://${SERVICE_FQDN_WEB}/auth/github/ok}
+      - DKIM_DOMAIN_NAME=${DKIM_DOMAIN_NAME:-${SERVICE_FQDN_WEB}}
+      - DKIM_KEY_SELECTOR=${DKIM_KEY_SELECTOR:-default}
+      - TURNSTILE_ENABLED=${TURNSTILE_ENABLED:-true}
+      - VANITY_DOMAINS=${VANITY_DOMAINS:-mailsire.com,hideaddress.net,secret.fyi,hash.fyi}
+      - TXT_RECORD_PREFIX=${TXT_RECORD_PREFIX:-forward-email}
+      - MAX_FORWARDED_ADDRESSES=${MAX_FORWARDED_ADDRESSES:-10}
+      - API_SECRETS=${API_SECRETS:-${SERVICE_PASSWORD_64_API}}
+      - API_RESTRICTED_SYMBOL=${API_RESTRICTED_SYMBOL:-API_RESTRICTED_SYMBOL}
+      - EMAIL_RETENTION=${EMAIL_RETENTION:-30d}
+      - LOG_RETENTION=${LOG_RETENTION:-7d}
+      - VERIFICATION_PIN_TIMEOUT_MS=${VERIFICATION_PIN_TIMEOUT_MS:-1d}
+      - VERIFICATION_PIN_EMAIL_INTERVAL_MS=${VERIFICATION_PIN_EMAIL_INTERVAL_MS:-5m}
+      - RESET_TOKEN_TIMEOUT_MS=${RESET_TOKEN_TIMEOUT_MS:-30m}
+      - CHANGE_EMAIL_TOKEN_TIMEOUT_MS=${CHANGE_EMAIL_TOKEN_TIMEOUT_MS:-30m}
+      - CHANGE_EMAIL_LIMIT_MS=${CHANGE_EMAIL_LIMIT_MS:-30m}
+      - ENABLE_MONITOR_SERVER=${ENABLE_MONITOR_SERVER:-true}
+      - WEB_REDIS_TLS=${WEB_REDIS_TLS:-false}
+      - WEB_REDIS_USERNAME=${WEB_REDIS_USERNAME:-default}
+      - WEB_REDIS_PASSWORD=${WEB_REDIS_PASSWORD:-${SERVICE_PASSWORD_64_REDIS}}
+      - WEB_REDIS_HOST=${WEB_REDIS_HOST:-redis}
+      - WEB_REDIS_PORT=${WEB_REDIS_PORT:-6379}
+      - WEB_REDIS_MAX_RETRY_LOADING_TIME=${WEB_REDIS_MAX_RETRY_LOADING_TIME:-1000}
     depends_on:
       mongodb:
         condition: service_started
@@ -35,24 +128,49 @@ services:
   api:
     image: ghcr.io/forwardemail/forwardemail.net-selfhosted:latest
     container_name: api
-    network_mode: host
-    hostname: api.${SERVICE_FQDN_WEB}
+    hostname: api.${SERVICE_FQDN_WEB:-localhost}
     environment:
-      - DOMAIN=api.${SERVICE_FQDN_WEB}
+      - DOMAIN=${DOMAIN:-api.${SERVICE_FQDN_WEB}}
+      - NODE_ENV=${NODE_ENV:-production}
+      - HTTP_PROTOCOL=${HTTP_PROTOCOL:-https}
+      - HELPER_ENCRYPTION_KEY=${HELPER_ENCRYPTION_KEY:-${SERVICE_BASE64_WEB}}
+      - SRS_SECRET=${SRS_SECRET:-${SERVICE_BASE64_64_WEB}}
+      - MONGO_USER=${MONGO_USER:?${SERVICE_USER_MONGO}}
+      - MONGO_PASS=${MONGO_PASS:?${SERVICE_PASSWORD_64_MONGO}}
+      - MONGO_HOST=${MONGO_HOST:-mongodb}
+      - MONGO_PORT=${MONGO_PORT:-27017}
+      - MONGO_URI=${MONGO_URI:-mongodb://${SERVICE_USER_MONGO}:${SERVICE_PASSWORD_64_MONGO}@mongodb:27017/forwardemail_production?authSource=admin}
+      - REDIS_PASSWORD=${REDIS_PASSWORD:?${SERVICE_PASSWORD_64_REDIS}}
+      - REDIS_HOST=${REDIS_HOST:-redis}
+      - REDIS_PORT=${REDIS_PORT:-6379}
+      - REDIS_USERNAME=${REDIS_USERNAME:-default}
+      - API_HOST=${API_HOST:-api.${SERVICE_FQDN_WEB}}
+      - API_PORT=${API_PORT:-4000}
+      - API_PROTOCOL=${API_PROTOCOL:-https}
+      - API_URL=${API_URL:-https://api.${SERVICE_FQDN_WEB}}
+      - API_SSL_KEY_PATH=${API_SSL_KEY_PATH:-/app/ssl/key.pem}
+      - API_SSL_CERT_PATH=${API_SSL_CERT_PATH:-/app/ssl/cert.pem}
+      - API_SSL_CA_PATH=${API_SSL_CA_PATH:-/app/ssl/ca.pem}
+      - API_SECRETS=${API_SECRETS:-${SERVICE_PASSWORD_64_API}}
+      - SMTP_HOST=${SMTP_HOST:-smtp.${SERVICE_FQDN_WEB}}
+      - IMAP_HOST=${IMAP_HOST:-imap.${SERVICE_FQDN_WEB}}
+      - SEND_EMAIL=${SEND_EMAIL:-false}
+      - PREVIEW_EMAIL=${PREVIEW_EMAIL:-true}
+      - API_REDIS_TLS=${API_REDIS_TLS:-false}
+      - API_REDIS_USERNAME=${API_REDIS_USERNAME:-default}
+      - API_REDIS_PASSWORD=${API_REDIS_PASSWORD:-${SERVICE_PASSWORD_64_REDIS}}
+      - API_REDIS_HOST=${API_REDIS_HOST:-redis}
+      - API_REDIS_PORT=${API_REDIS_PORT:-6379}
     command: ["node", "api.js"]
     volumes:
       - forward-ssl-data:/app/ssl/
       - ./.env:/app/.env
     healthcheck:
-      test: "curl -ksL -o /dev/null https://127.0.0.1:4000/v1/test"
+      test: "curl -ksL -o /dev/null https://127.0.0.1:${API_PORT:-4000}/v1/test"
       interval: 30s
       timeout: 30s
       retries: 3
     restart: unless-stopped
-    extra_hosts:
-      - "api.${SERVICE_FQDN_WEB}:127.0.0.1"
-      - "smtp.${SERVICE_FQDN_WEB}:127.0.0.1"
-      - "imap.${SERVICE_FQDN_WEB}:127.0.0.1"
     depends_on:
       mongodb:
         condition: service_started
@@ -64,46 +182,74 @@ services:
   bree:
     image: ghcr.io/forwardemail/forwardemail.net-selfhosted:latest
     container_name: bree
-    network_mode: host
     command: ["node", "bree.js"]
     environment:
-      - DOMAIN=${SERVICE_FQDN_WEB}
+      - DOMAIN=${DOMAIN:-${SERVICE_FQDN_WEB}}
+      - NODE_ENV=${NODE_ENV:-production}
+      - HTTP_PROTOCOL=${HTTP_PROTOCOL:-https}
+      - HELPER_ENCRYPTION_KEY=${HELPER_ENCRYPTION_KEY:-${SERVICE_BASE64_WEB}}
+      - MONGO_USER=${MONGO_USER:?${SERVICE_USER_MONGO}}
+      - MONGO_PASS=${MONGO_PASS:?${SERVICE_PASSWORD_64_MONGO}}
+      - MONGO_HOST=${MONGO_HOST:-mongodb}
+      - MONGO_PORT=${MONGO_PORT:-27017}
+      - MONGO_URI=${MONGO_URI:-mongodb://${SERVICE_USER_MONGO}:${SERVICE_PASSWORD_64_MONGO}@mongodb:27017/forwardemail_production?authSource=admin}
+      - REDIS_PASSWORD=${REDIS_PASSWORD:?${SERVICE_PASSWORD_64_REDIS}}
+      - REDIS_HOST=${REDIS_HOST:-redis}
+      - REDIS_PORT=${REDIS_PORT:-6379}
+      - REDIS_USERNAME=${REDIS_USERNAME:-default}
+      - BREE_HOST=${BREE_HOST:-localhost}
+      - BREE_REDIS_TLS=${BREE_REDIS_TLS:-false}
+      - BREE_REDIS_USERNAME=${BREE_REDIS_USERNAME:-default}
+      - BREE_REDIS_PASSWORD=${BREE_REDIS_PASSWORD:-${SERVICE_PASSWORD_64_REDIS}}
+      - BREE_REDIS_HOST=${BREE_REDIS_HOST:-redis}
+      - BREE_REDIS_PORT=${BREE_REDIS_PORT:-6379}
     volumes:
       - forward-ssl-data:/app/ssl/
       - ./.env:/app/.env
     restart: unless-stopped
-    extra_hosts:
-      - "${SERVICE_FQDN_WEB}:127.0.0.1"
-      - "smtp.${SERVICE_FQDN_WEB}:127.0.0.1"
+    exclude_from_hc: false
     depends_on:
       mongodb:
         condition: service_started
       redis:
         condition: service_started
 
-  # https://forwardemail.net/en/faq#what-are-your-imap-server-configuration-settings
   imap:
     image: ghcr.io/forwardemail/forwardemail.net-selfhosted:latest
     container_name: imap
-    network_mode: host
-    hostname: imap.${SERVICE_FQDN_WEB}
+    hostname: imap.${SERVICE_FQDN_WEB:-localhost}
     environment:
-      - DOMAIN=imap.${SERVICE_FQDN_WEB}
+      - DOMAIN=${DOMAIN:-imap.${SERVICE_FQDN_WEB}}
+      - NODE_ENV=${NODE_ENV:-production}
+      - HTTP_PROTOCOL=${HTTP_PROTOCOL:-https}
+      - HELPER_ENCRYPTION_KEY=${HELPER_ENCRYPTION_KEY:-${SERVICE_BASE64_WEB}}
+      - MONGO_USER=${MONGO_USER:?${SERVICE_USER_MONGO}}
+      - MONGO_PASS=${MONGO_PASS:?${SERVICE_PASSWORD_64_MONGO}}
+      - MONGO_HOST=${MONGO_HOST:-mongodb}
+      - MONGO_PORT=${MONGO_PORT:-27017}
+      - MONGO_URI=${MONGO_URI:-mongodb://${SERVICE_USER_MONGO}:${SERVICE_PASSWORD_64_MONGO}@mongodb:27017/forwardemail_production?authSource=admin}
+      - REDIS_PASSWORD=${REDIS_PASSWORD:?${SERVICE_PASSWORD_64_REDIS}}
+      - REDIS_HOST=${REDIS_HOST:-redis}
+      - REDIS_PORT=${REDIS_PORT:-6379}
+      - REDIS_USERNAME=${REDIS_USERNAME:-default}
+      - IMAP_HOST=${IMAP_HOST:-imap.${SERVICE_FQDN_WEB}}
+      - IMAP_PORT=${IMAP_PORT:-2993}
+      - IMAP_REDIS_TLS=${IMAP_REDIS_TLS:-false}
+      - IMAP_REDIS_USERNAME=${IMAP_REDIS_USERNAME:-default}
+      - IMAP_REDIS_PASSWORD=${IMAP_REDIS_PASSWORD:-${SERVICE_PASSWORD_64_REDIS}}
+      - IMAP_REDIS_HOST=${IMAP_REDIS_HOST:-redis}
+      - IMAP_REDIS_PORT=${IMAP_REDIS_PORT:-6379}
     command: ["node", "imap.js"]
     volumes:
-      - forward-sql-data:/mnt//mnt/storage_do_1
+      - forward-sql-data:/mnt/storage_do_1
       - forward-ssl-data:/app/ssl/
       - ./.env:/app/.env
     healthcheck:
-      test: "nc -z 127.0.0.1 993"
+      test: "nc -z 127.0.0.1 ${IMAP_PORT:-993}"
       interval: 30s
       timeout: 30s
       retries: 3
     restart: unless-stopped
-    extra_hosts:
-      - "imap.${SERVICE_FQDN_WEB}:127.0.0.1"
-      - "smtp.${SERVICE_FQDN_WEB}:127.0.0.1"
-      - "sqlite.${SERVICE_FQDN_WEB}:127.0.0.1"
     depends_on:
       mongodb:
         condition: service_started
@@ -112,28 +258,42 @@ services:
       sqlite:
         condition: service_healthy
 
-  # https://forwardemail.net/en/faq#do-you-support-pop3
   pop3:
     image: ghcr.io/forwardemail/forwardemail.net-selfhosted:latest
     container_name: pop3
-    network_mode: host
-    hostname: pop3.${SERVICE_FQDN_WEB}
+    hostname: pop3.${SERVICE_FQDN_WEB:-localhost}
     environment:
-      - DOMAIN=pop3.${SERVICE_FQDN_WEB}
+      - DOMAIN=${DOMAIN:-pop3.${SERVICE_FQDN_WEB}}
+      - NODE_ENV=${NODE_ENV:-production}
+      - HTTP_PROTOCOL=${HTTP_PROTOCOL:-https}
+      - HELPER_ENCRYPTION_KEY=${HELPER_ENCRYPTION_KEY:-${SERVICE_BASE64_WEB}}
+      - MONGO_USER=${MONGO_USER:?${SERVICE_USER_MONGO}}
+      - MONGO_PASS=${MONGO_PASS:?${SERVICE_PASSWORD_64_MONGO}}
+      - MONGO_HOST=${MONGO_HOST:-mongodb}
+      - MONGO_PORT=${MONGO_PORT:-27017}
+      - MONGO_URI=${MONGO_URI:-mongodb://${SERVICE_USER_MONGO}:${SERVICE_PASSWORD_64_MONGO}@mongodb:27017/forwardemail_production?authSource=admin}
+      - REDIS_PASSWORD=${REDIS_PASSWORD:?${SERVICE_PASSWORD_64_REDIS}}
+      - REDIS_HOST=${REDIS_HOST:-redis}
+      - REDIS_PORT=${REDIS_PORT:-6379}
+      - REDIS_USERNAME=${REDIS_USERNAME:-default}
+      - POP3_HOST=${POP3_HOST:-pop3.${SERVICE_FQDN_WEB}}
+      - POP3_PORT=${POP3_PORT:-2995}
+      - POP3_REDIS_TLS=${POP3_REDIS_TLS:-false}
+      - POP3_REDIS_USERNAME=${POP3_REDIS_USERNAME:-default}
+      - POP3_REDIS_PASSWORD=${POP3_REDIS_PASSWORD:-${SERVICE_PASSWORD_64_REDIS}}
+      - POP3_REDIS_HOST=${POP3_REDIS_HOST:-redis}
+      - POP3_REDIS_PORT=${POP3_REDIS_PORT:-6379}
     command: ["node", "pop3.js"]
     volumes:
-      - forward-sql-data:/mnt//mnt/storage_do_1
+      - forward-sql-data:/mnt/storage_do_1
       - forward-ssl-data:/app/ssl/
       - ./.env:/app/.env
     healthcheck:
-      test: "nc -z 127.0.0.1 995"
+      test: "nc -z 127.0.0.1 ${POP3_PORT:-995}"
       interval: 30s
       timeout: 30s
       retries: 3
     restart: unless-stopped
-    extra_hosts:
-      - "pop3.${SERVICE_FQDN_WEB}:127.0.0.1"
-      - "smtp.${SERVICE_FQDN_WEB}:127.0.0.1"
     depends_on:
       mongodb:
         condition: service_started
@@ -142,14 +302,34 @@ services:
       sqlite:
         condition: service_healthy
 
-  # https://forwardemail.net/en/faq#what-are-your-smtp-server-configuration-settings
   smtp:
     image: ghcr.io/forwardemail/forwardemail.net-selfhosted:latest
     container_name: smtp
-    network_mode: host
-    hostname: smtp.${SERVICE_FQDN_WEB}
+    hostname: smtp.${SERVICE_FQDN_WEB:-localhost}
     environment:
-      - DOMAIN=smtp.${SERVICE_FQDN_WEB}
+      - DOMAIN=${DOMAIN:-smtp.${SERVICE_FQDN_WEB}}
+      - NODE_ENV=${NODE_ENV:-production}
+      - HTTP_PROTOCOL=${HTTP_PROTOCOL:-https}
+      - HELPER_ENCRYPTION_KEY=${HELPER_ENCRYPTION_KEY:-${SERVICE_BASE64_WEB}}
+      - MONGO_USER=${MONGO_USER:?${SERVICE_USER_MONGO}}
+      - MONGO_PASS=${MONGO_PASS:?${SERVICE_PASSWORD_64_MONGO}}
+      - MONGO_HOST=${MONGO_HOST:-mongodb}
+      - MONGO_PORT=${MONGO_PORT:-27017}
+      - MONGO_URI=${MONGO_URI:-mongodb://${SERVICE_USER_MONGO}:${SERVICE_PASSWORD_64_MONGO}@mongodb:27017/forwardemail_production?authSource=admin}
+      - REDIS_PASSWORD=${REDIS_PASSWORD:?${SERVICE_PASSWORD_64_REDIS}}
+      - REDIS_HOST=${REDIS_HOST:-redis}
+      - REDIS_PORT=${REDIS_PORT:-6379}
+      - REDIS_USERNAME=${REDIS_USERNAME:-default}
+      - SMTP_HOST=${SMTP_HOST:-smtp.${SERVICE_FQDN_WEB}}
+      - SMTP_PORT=${SMTP_PORT:-2587}
+      - SMTP_TLS_MIN_VERSION=${SMTP_TLS_MIN_VERSION:-TLSv1.2}
+      - SMTP_ALLOW_INSECURE_AUTH=${SMTP_ALLOW_INSECURE_AUTH:-false}
+      - SMTP_TRANSPORT_USER=${SMTP_TRANSPORT_USER:-support@${SERVICE_FQDN_WEB}}
+      - SMTP_TRANSPORT_HOST=${SMTP_TRANSPORT_HOST:-${SERVICE_FQDN_WEB}}
+      - SMTP_TRANSPORT_PORT=${SMTP_TRANSPORT_PORT:-465}
+      - SMTP_TRANSPORT_SECURE=${SMTP_TRANSPORT_SECURE:-true}
+      - SMTP_MESSAGE_MAX_SIZE=${SMTP_MESSAGE_MAX_SIZE:-50MB}
+      - MAX_RECIPIENTS=${MAX_RECIPIENTS:-50}
     command: ["node", "smtp.js"]
     volumes:
       - forward-ssl-data:/app/ssl/
@@ -160,10 +340,6 @@ services:
       timeout: 30s
       retries: 3
     restart: unless-stopped
-    extra_hosts:
-      - "smtp.${SERVICE_FQDN_WEB}:127.0.0.1"
-      - "imap.${SERVICE_FQDN_WEB}:127.0.0.1"
-      - "sqlite.${SERVICE_FQDN_WEB}:127.0.0.1"
     depends_on:
       mongodb:
         condition: service_started
@@ -173,20 +349,27 @@ services:
   smtp_bree:
     image: ghcr.io/forwardemail/forwardemail.net-selfhosted:latest
     container_name: smtp_bree
-    network_mode: host
-    hostname: smtp.${SERVICE_FQDN_WEB}
+    hostname: smtp.${SERVICE_FQDN_WEB:-localhost}
     environment:
-      - DOMAIN=smtp.${SERVICE_FQDN_WEB}
+      - DOMAIN=${DOMAIN:-smtp.${SERVICE_FQDN_WEB}}
+      - NODE_ENV=${NODE_ENV:-production}
+      - HTTP_PROTOCOL=${HTTP_PROTOCOL:-https}
+      - HELPER_ENCRYPTION_KEY=${HELPER_ENCRYPTION_KEY:-${SERVICE_BASE64_WEB}}
+      - MONGO_USER=${MONGO_USER:?${SERVICE_USER_MONGO}}
+      - MONGO_PASS=${MONGO_PASS:?${SERVICE_PASSWORD_64_MONGO}}
+      - MONGO_HOST=${MONGO_HOST:-mongodb}
+      - MONGO_PORT=${MONGO_PORT:-27017}
+      - MONGO_URI=${MONGO_URI:-mongodb://${SERVICE_USER_MONGO}:${SERVICE_PASSWORD_64_MONGO}@mongodb:27017/forwardemail_production?authSource=admin}
+      - REDIS_PASSWORD=${REDIS_PASSWORD:?${SERVICE_PASSWORD_64_REDIS}}
+      - REDIS_HOST=${REDIS_HOST:-redis}
+      - REDIS_PORT=${REDIS_PORT:-6379}
+      - REDIS_USERNAME=${REDIS_USERNAME:-default}
     command: ["node", "smtp-bree.js"]
     volumes:
       - ./.env:/app/.env
       - forward-ssl-data:/app/ssl/
     restart: unless-stopped
-    extra_hosts:
-      - "${SERVICE_FQDN_WEB}:127.0.0.1"
-      - "smtp.${SERVICE_FQDN_WEB}:127.0.0.1"
-      - "imap.${SERVICE_FQDN_WEB}:127.0.0.1"
-      - "sqlite.${SERVICE_FQDN_WEB}:127.0.0.1"
+    exclude_from_hc: false
     depends_on:
       mongodb:
         condition: service_started
@@ -198,44 +381,67 @@ services:
   mongodb:
     image: mongo:latest
     container_name: mongodb
-    network_mode: host
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USER:?${SERVICE_USER_MONGO}}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASS:?${SERVICE_PASSWORD_64_MONGO}}
     restart: unless-stopped
     volumes:
       - forward-mongo-data:/data/db
       - ./mongo-backups:/backups
+    healthcheck:
+      test: "mongosh --eval 'db.adminCommand(\"ping\")' || exit 1"
+      interval: 30s
+      timeout: 30s
+      retries: 3
 
   redis:
     image: redis:latest
     container_name: redis
-    network_mode: host
+    command: redis-server --requirepass ${REDIS_PASSWORD:?${SERVICE_PASSWORD_64_REDIS}} --appendonly yes
     restart: unless-stopped
     volumes:
       - forward-redis-data:/data
-    env_file:
-      - .env
+    healthcheck:
+      test: "redis-cli --raw incr ping || exit 1"
+      interval: 30s
+      timeout: 30s
+      retries: 3
 
   sqlite:
     image: ghcr.io/forwardemail/forwardemail.net-selfhosted:latest
     container_name: sqlite
-    network_mode: host
-    hostname: sqlite.${SERVICE_FQDN_WEB}
+    hostname: sqlite.${SERVICE_FQDN_WEB:-localhost}
     environment:
-      - DOMAIN=sqlite.${SERVICE_FQDN_WEB}
+      - DOMAIN=${DOMAIN:-sqlite.${SERVICE_FQDN_WEB}}
+      - NODE_ENV=${NODE_ENV:-production}
+      - HTTP_PROTOCOL=${HTTP_PROTOCOL:-https}
+      - HELPER_ENCRYPTION_KEY=${HELPER_ENCRYPTION_KEY:-${SERVICE_BASE64_WEB}}
+      - MONGO_USER=${MONGO_USER:?${SERVICE_USER_MONGO}}
+      - MONGO_PASS=${MONGO_PASS:?${SERVICE_PASSWORD_64_MONGO}}
+      - MONGO_HOST=${MONGO_HOST:-mongodb}
+      - MONGO_PORT=${MONGO_PORT:-27017}
+      - MONGO_URI=${MONGO_URI:-mongodb://${SERVICE_USER_MONGO}:${SERVICE_PASSWORD_64_MONGO}@mongodb:27017/forwardemail_production?authSource=admin}
+      - REDIS_PASSWORD=${REDIS_PASSWORD:?${SERVICE_PASSWORD_64_REDIS}}
+      - REDIS_HOST=${REDIS_HOST:-redis}
+      - REDIS_PORT=${REDIS_PORT:-6379}
+      - REDIS_USERNAME=${REDIS_USERNAME:-default}
+      - SQLITE_HOST=${SQLITE_HOST:-sqlite.${SERVICE_FQDN_WEB}}
+      - SQLITE_PORT=${SQLITE_PORT:-3456}
+      - SQLITE_STORAGE_PATH=${SQLITE_STORAGE_PATH:-storage_do_1}
+      - SQLITE_TMPDIR=${SQLITE_TMPDIR:-/tmp/production_storage_do_1_tmp}
+      - SQLITE_RCLONE_ENABLED=${SQLITE_RCLONE_ENABLED:-false}
+      - SQLITE_FTS5_ENABLED=${SQLITE_FTS5_ENABLED:-false}
     command: ["node", "sqlite.js"]
     volumes:
-      - forward-sql-data:/mnt//mnt/storage_do_1
+      - forward-sql-data:/mnt/storage_do_1
       - forward-ssl-data:/app/ssl/
       - ./.env:/app/.env
     healthcheck:
-      test: "nc -z 127.0.0.1 3456"
+      test: "nc -z 127.0.0.1 ${SQLITE_PORT:-3456}"
       interval: 30s
       timeout: 30s
       retries: 3
     restart: unless-stopped
-    extra_hosts:
-      - "sqlite.${SERVICE_FQDN_WEB}:127.0.0.1"
-      - "smtp.${SERVICE_FQDN_WEB}:127.0.0.1"
-      - "imap.${SERVICE_FQDN_WEB}:127.0.0.1"
     depends_on:
       mongodb:
         condition: service_started
@@ -247,19 +453,28 @@ services:
   sqlite_bree:
     image: ghcr.io/forwardemail/forwardemail.net-selfhosted:latest
     container_name: sqlite_bree
-    network_mode: host
-    hostname: sqlite.${SERVICE_FQDN_WEB}
+    hostname: sqlite.${SERVICE_FQDN_WEB:-localhost}
+    environment:
+      - DOMAIN=${DOMAIN:-sqlite.${SERVICE_FQDN_WEB}}
+      - NODE_ENV=${NODE_ENV:-production}
+      - HTTP_PROTOCOL=${HTTP_PROTOCOL:-https}
+      - HELPER_ENCRYPTION_KEY=${HELPER_ENCRYPTION_KEY:-${SERVICE_BASE64_WEB}}
+      - MONGO_USER=${MONGO_USER:?${SERVICE_USER_MONGO}}
+      - MONGO_PASS=${MONGO_PASS:?${SERVICE_PASSWORD_64_MONGO}}
+      - MONGO_HOST=${MONGO_HOST:-mongodb}
+      - MONGO_PORT=${MONGO_PORT:-27017}
+      - MONGO_URI=${MONGO_URI:-mongodb://${SERVICE_USER_MONGO}:${SERVICE_PASSWORD_64_MONGO}@mongodb:27017/forwardemail_production?authSource=admin}
+      - REDIS_PASSWORD=${REDIS_PASSWORD:?${SERVICE_PASSWORD_64_REDIS}}
+      - REDIS_HOST=${REDIS_HOST:-redis}
+      - REDIS_PORT=${REDIS_PORT:-6379}
+      - REDIS_USERNAME=${REDIS_USERNAME:-default}
     command: ["node", "sqlite-bree.js"]
     volumes:
       - forward-ssl-data:/app/ssl/
-      - forward-sql-data:/mnt//mnt/storage_do_1
+      - forward-sql-data:/mnt/storage_do_1
       - ./.env:/app/.env
     restart: unless-stopped
-    extra_hosts:
-      - "${SERVICE_FQDN_WEB}:127.0.0.1"
-      - "sqlite.${SERVICE_FQDN_WEB}:127.0.0.1"
-      - "imap.${SERVICE_FQDN_WEB}:127.0.0.1"
-      - "smtp.${SERVICE_FQDN_WEB}:127.0.0.1"
+    exclude_from_hc: false
     depends_on:
       mongodb:
         condition: service_started
@@ -271,14 +486,26 @@ services:
   mx:
     image: ghcr.io/forwardemail/forwardemail.net-selfhosted:latest
     container_name: mx
-    network_mode: host
     command: ["node", "mx.js"]
-    hostname: mx.${SERVICE_FQDN_WEB}
+    hostname: mx.${SERVICE_FQDN_WEB:-localhost}
     environment:
-      - DOMAIN=mx.${SERVICE_FQDN_WEB}
+      - DOMAIN=${DOMAIN:-mx.${SERVICE_FQDN_WEB}}
+      - NODE_ENV=${NODE_ENV:-production}
+      - HTTP_PROTOCOL=${HTTP_PROTOCOL:-https}
+      - HELPER_ENCRYPTION_KEY=${HELPER_ENCRYPTION_KEY:-${SERVICE_BASE64_WEB}}
+      - MONGO_USER=${MONGO_USER:?${SERVICE_USER_MONGO}}
+      - MONGO_PASS=${MONGO_PASS:?${SERVICE_PASSWORD_64_MONGO}}
+      - MONGO_HOST=${MONGO_HOST:-mongodb}
+      - MONGO_PORT=${MONGO_PORT:-27017}
+      - MONGO_URI=${MONGO_URI:-mongodb://${SERVICE_USER_MONGO}:${SERVICE_PASSWORD_64_MONGO}@mongodb:27017/forwardemail_production?authSource=admin}
+      - REDIS_PASSWORD=${REDIS_PASSWORD:?${SERVICE_PASSWORD_64_REDIS}}
+      - REDIS_HOST=${REDIS_HOST:-redis}
+      - REDIS_PORT=${REDIS_PORT:-6379}
+      - REDIS_USERNAME=${REDIS_USERNAME:-default}
+      - MX_PORT=${MX_PORT:-2525}
     volumes:
       - forward-ssl-data:/app/ssl/
-      - forward-sql-data:/mnt//mnt/storage_do_1
+      - forward-sql-data:/mnt/storage_do_1
       - ./.env:/app/.env
     healthcheck:
       test: "nc -z 127.0.0.1 25"
@@ -286,13 +513,6 @@ services:
       timeout: 30s
       retries: 3
     restart: unless-stopped
-    extra_hosts:
-      - "mx.${SERVICE_FQDN_WEB}:127.0.0.1"
-      - "caldav.${SERVICE_FQDN_WEB}:127.0.0.1"
-      - "carddav.${SERVICE_FQDN_WEB}:127.0.0.1"
-      - "imap.${SERVICE_FQDN_WEB}:127.0.0.1"
-      - "smtp.${SERVICE_FQDN_WEB}:127.0.0.1"
-      - "sqlite.${SERVICE_FQDN_WEB}:127.0.0.1"
     depends_on:
       mongodb:
         condition: service_started
@@ -304,25 +524,43 @@ services:
   caldav:
     image: ghcr.io/forwardemail/forwardemail.net-selfhosted:latest
     container_name: caldav
-    network_mode: host
-    hostname: caldav.${SERVICE_FQDN_WEB}
+    hostname: caldav.${SERVICE_FQDN_WEB:-localhost}
     environment:
-      - DOMAIN=caldav.${SERVICE_FQDN_WEB}
+      - DOMAIN=${DOMAIN:-caldav.${SERVICE_FQDN_WEB}}
+      - NODE_ENV=${NODE_ENV:-production}
+      - HTTP_PROTOCOL=${HTTP_PROTOCOL:-https}
+      - HELPER_ENCRYPTION_KEY=${HELPER_ENCRYPTION_KEY:-${SERVICE_BASE64_WEB}}
+      - MONGO_USER=${MONGO_USER:?${SERVICE_USER_MONGO}}
+      - MONGO_PASS=${MONGO_PASS:?${SERVICE_PASSWORD_64_MONGO}}
+      - MONGO_HOST=${MONGO_HOST:-mongodb}
+      - MONGO_PORT=${MONGO_PORT:-27017}
+      - MONGO_URI=${MONGO_URI:-mongodb://${SERVICE_USER_MONGO}:${SERVICE_PASSWORD_64_MONGO}@mongodb:27017/forwardemail_production?authSource=admin}
+      - REDIS_PASSWORD=${REDIS_PASSWORD:?${SERVICE_PASSWORD_64_REDIS}}
+      - REDIS_HOST=${REDIS_HOST:-redis}
+      - REDIS_PORT=${REDIS_PORT:-6379}
+      - REDIS_USERNAME=${REDIS_USERNAME:-default}
+      - CALDAV_HOST=${CALDAV_HOST:-caldav.${SERVICE_FQDN_WEB}}
+      - CALDAV_PORT=${CALDAV_PORT:-5000}
+      - CALDAV_PROTOCOL=${CALDAV_PROTOCOL:-https}
+      - CALDAV_URL=${CALDAV_URL:-https://caldav.${SERVICE_FQDN_WEB}}
+      - CALDAV_SSL_KEY_PATH=${CALDAV_SSL_KEY_PATH:-/app/ssl/key.pem}
+      - CALDAV_SSL_CERT_PATH=${CALDAV_SSL_CERT_PATH:-/app/ssl/cert.pem}
+      - CALDAV_SSL_CA_PATH=${CALDAV_SSL_CA_PATH:-/app/ssl/ca.pem}
+      - CALDAV_REDIS_TLS=${CALDAV_REDIS_TLS:-false}
+      - CALDAV_REDIS_USERNAME=${CALDAV_REDIS_USERNAME:-default}
+      - CALDAV_REDIS_PASSWORD=${CALDAV_REDIS_PASSWORD:-${SERVICE_PASSWORD_64_REDIS}}
+      - CALDAV_REDIS_HOST=${CALDAV_REDIS_HOST:-redis}
+      - CALDAV_REDIS_PORT=${CALDAV_REDIS_PORT:-6379}
     command: ["node", "caldav.js"]
     volumes:
       - ./.env:/app/.env
       - forward-ssl-data:/app/ssl/
     healthcheck:
-      test: "nc -z 127.0.0.1 5000"
+      test: "nc -z 127.0.0.1 ${CALDAV_PORT:-5000}"
       interval: 30s
       timeout: 30s
       retries: 3
     restart: unless-stopped
-    extra_hosts:
-      - "caldav.${SERVICE_FQDN_WEB}:127.0.0.1"
-      - "smtp.${SERVICE_FQDN_WEB}:127.0.0.1"
-      - "imap.${SERVICE_FQDN_WEB}:127.0.0.1"
-      - "sqlite.${SERVICE_FQDN_WEB}:127.0.0.1"
     depends_on:
       mongodb:
         condition: service_started
@@ -334,25 +572,43 @@ services:
   carddav:
     image: ghcr.io/forwardemail/forwardemail.net-selfhosted:latest
     container_name: carddav
-    network_mode: host
-    hostname: carddav.${SERVICE_FQDN_WEB}
+    hostname: carddav.${SERVICE_FQDN_WEB:-localhost}
     environment:
-      - DOMAIN=carddav.${SERVICE_FQDN_WEB}
+      - DOMAIN=${DOMAIN:-carddav.${SERVICE_FQDN_WEB}}
+      - NODE_ENV=${NODE_ENV:-production}
+      - HTTP_PROTOCOL=${HTTP_PROTOCOL:-https}
+      - HELPER_ENCRYPTION_KEY=${HELPER_ENCRYPTION_KEY:-${SERVICE_BASE64_WEB}}
+      - MONGO_USER=${MONGO_USER:?${SERVICE_USER_MONGO}}
+      - MONGO_PASS=${MONGO_PASS:?${SERVICE_PASSWORD_64_MONGO}}
+      - MONGO_HOST=${MONGO_HOST:-mongodb}
+      - MONGO_PORT=${MONGO_PORT:-27017}
+      - MONGO_URI=${MONGO_URI:-mongodb://${SERVICE_USER_MONGO}:${SERVICE_PASSWORD_64_MONGO}@mongodb:27017/forwardemail_production?authSource=admin}
+      - REDIS_PASSWORD=${REDIS_PASSWORD:?${SERVICE_PASSWORD_64_REDIS}}
+      - REDIS_HOST=${REDIS_HOST:-redis}
+      - REDIS_PORT=${REDIS_PORT:-6379}
+      - REDIS_USERNAME=${REDIS_USERNAME:-default}
+      - CARDDAV_HOST=${CARDDAV_HOST:-carddav.${SERVICE_FQDN_WEB}}
+      - CARDDAV_PORT=${CARDDAV_PORT:-6000}
+      - CARDDAV_PROTOCOL=${CARDDAV_PROTOCOL:-https}
+      - CARDDAV_URL=${CARDDAV_URL:-https://carddav.${SERVICE_FQDN_WEB}}
+      - CARDDAV_SSL_KEY_PATH=${CARDDAV_SSL_KEY_PATH:-/app/ssl/key.pem}
+      - CARDDAV_SSL_CERT_PATH=${CARDDAV_SSL_CERT_PATH:-/app/ssl/cert.pem}
+      - CARDDAV_SSL_CA_PATH=${CARDDAV_SSL_CA_PATH:-/app/ssl/ca.pem}
+      - CARDDAV_REDIS_TLS=${CARDDAV_REDIS_TLS:-false}
+      - CARDDAV_REDIS_USERNAME=${CARDDAV_REDIS_USERNAME:-default}
+      - CARDDAV_REDIS_PASSWORD=${CARDDAV_REDIS_PASSWORD:-${SERVICE_PASSWORD_64_REDIS}}
+      - CARDDAV_REDIS_HOST=${CARDDAV_REDIS_HOST:-redis}
+      - CARDDAV_REDIS_PORT=${CARDDAV_REDIS_PORT:-6379}
     command: ["node", "carddav.js"]
     volumes:
       - ./.env:/app/.env
       - forward-ssl-data:/app/ssl/
     healthcheck:
-      test: "nc -z 127.0.0.1 6000"
+      test: "nc -z 127.0.0.1 ${CARDDAV_PORT:-6000}"
       interval: 30s
       timeout: 30s
       retries: 3
     restart: unless-stopped
-    extra_hosts:
-      - "carddav.${SERVICE_FQDN_WEB}:127.0.0.1"
-      - "smtp.${SERVICE_FQDN_WEB}:127.0.0.1"
-      - "imap.${SERVICE_FQDN_WEB}:127.0.0.1"
-      - "sqlite.${SERVICE_FQDN_WEB}:127.0.0.1"
     depends_on:
       mongodb:
         condition: service_started
@@ -360,7 +616,7 @@ services:
         condition: service_started
       sqlite:
         condition: service_healthy
-
+        
   # certbot:
   #   image: certbot/certbot
   #   container_name: certbot
@@ -369,10 +625,9 @@ services:
   #     - certbot-logs:/var/log/letsencrypt
   #   entrypoint: "/bin/sh -c 'trap exit TERM; while :; do sleep 6h & wait $!; certbot renew; done;'"
 
+
 volumes:
   forward-mongo-data:
   forward-redis-data:
   forward-sql-data:
   forward-ssl-data:
-  # certs:
-  # certbot-logs:

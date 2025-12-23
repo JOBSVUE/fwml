@@ -262,7 +262,7 @@ services:
       - /data/docker-volumes/certs/dnides:/app/ssl:ro
       - ./.env:/app/.env
     healthcheck:
-      test: "nc -z 127.0.0.1 993"
+      test: "nc -z 127.0.0.1 2993"
       interval: 30s
       timeout: 30s
       retries: 3
@@ -310,7 +310,7 @@ services:
       - /data/docker-volumes/certs/dnides:/app/ssl:ro
       - ./.env:/app/.env
     healthcheck:
-      test: "nc -z 127.0.0.1 995"
+      test: "nc -z 127.0.0.1 2995"
       interval: 30s
       timeout: 30s
       retries: 3
@@ -363,7 +363,7 @@ services:
       - /data/docker-volumes/certs/dnides:/app/ssl:ro
       - ./.env:/app/.env
     healthcheck:
-      test: "nc -z 127.0.0.1 465"
+      test: "nc -z 127.0.0.1 2587"
       interval: 30s
       timeout: 30s
       retries: 3
@@ -550,7 +550,7 @@ services:
       - forward-sql-data:/mnt/storage_do_1
       - ./.env:/app/.env
     healthcheck:
-      test: "nc -z 127.0.0.1 25"
+      test: "nc -z 127.0.0.1 2525"
       interval: 30s
       timeout: 30s
       retries: 3

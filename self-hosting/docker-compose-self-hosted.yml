@@ -445,7 +445,7 @@ services:
     restart: unless-stopped
     volumes:
       - forward-mongo-data:/data/db
-      - ./mongo-backups:/backups
+      - forward-mongo-backups:/backups
     healthcheck:
       test: "mongosh --eval 'db.adminCommand(\"ping\")' || exit 1"
       interval: 30s
@@ -732,6 +732,7 @@ services:
 
 volumes:
   forward-mongo-data:
+  forward-mongo-backups:
   forward-redis-data:
   forward-sql-data:
   forward-ssl-data:

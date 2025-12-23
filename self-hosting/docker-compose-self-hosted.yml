@@ -3,7 +3,7 @@ services:
     image: ghcr.io/forwardemail/forwardemail.net-selfhosted:latest
     container_name: web
     network_mode: host
-    hostname: ${DOMAIN}
+    hostname: ${SERVICE_FQDN_WEB}
     command: ["node", "web.js"]
     volumes:
       - forward-ssl-data:/app/ssl/
@@ -14,14 +14,16 @@ services:
       timeout: 30s
       retries: 3
     restart: unless-stopped
+    environment:
+      - DOMAIN=${SERVICE_FQDN_WEB}
     extra_hosts:
-      - "${DOMAIN}:127.0.0.1"
-      - "api.${DOMAIN}:127.0.0.1"
-      - "caldav.${DOMAIN}:127.0.0.1"
-      - "carddav.${DOMAIN}:127.0.0.1"
-      - "imap.${DOMAIN}:127.0.0.1"
-      - "smtp.${DOMAIN}:127.0.0.1"
-      - "sqlite.${DOMAIN}:127.0.0.1"
+      - "${SERVICE_FQDN_WEB}:127.0.0.1"
+      - "api.${SERVICE_FQDN_WEB}:127.0.0.1"
+      - "caldav.${SERVICE_FQDN_WEB}:127.0.0.1"
+      - "carddav.${SERVICE_FQDN_WEB}:127.0.0.1"
+      - "imap.${SERVICE_FQDN_WEB}:127.0.0.1"
+      - "smtp.${SERVICE_FQDN_WEB}:127.0.0.1"
+      - "sqlite.${SERVICE_FQDN_WEB}:127.0.0.1"
     depends_on:
       mongodb:
         condition: service_started
@@ -34,7 +36,9 @@ services:
     image: ghcr.io/forwardemail/forwardemail.net-selfhosted:latest
     container_name: api
     network_mode: host
-    hostname: api.${DOMAIN}
+    hostname: api.${SERVICE_FQDN_WEB}
+    environment:
+      - DOMAIN=api.${SERVICE_FQDN_WEB}
     command: ["node", "api.js"]
     volumes:
       - forward-ssl-data:/app/ssl/
@@ -46,9 +50,9 @@ services:
       retries: 3
     restart: unless-stopped
     extra_hosts:
-      - "${DOMAIN}:127.0.0.1"
-      - "smtp.${DOMAIN}:127.0.0.1"
-      - "imap.${DOMAIN}:127.0.0.1"
+      - "api.${SERVICE_FQDN_WEB}:127.0.0.1"
+      - "smtp.${SERVICE_FQDN_WEB}:127.0.0.1"
+      - "imap.${SERVICE_FQDN_WEB}:127.0.0.1"
     depends_on:
       mongodb:
         condition: service_started
@@ -62,13 +66,15 @@ services:
     container_name: bree
     network_mode: host
     command: ["node", "bree.js"]
+    environment:
+      - DOMAIN=${SERVICE_FQDN_WEB}
     volumes:
       - forward-ssl-data:/app/ssl/
       - ./.env:/app/.env
     restart: unless-stopped
     extra_hosts:
-      - "${DOMAIN}:127.0.0.1"
-      - "smtp.${DOMAIN}:127.0.0.1"
+      - "${SERVICE_FQDN_WEB}:127.0.0.1"
+      - "smtp.${SERVICE_FQDN_WEB}:127.0.0.1"
     depends_on:
       mongodb:
         condition: service_started
@@ -80,7 +86,9 @@ services:
     image: ghcr.io/forwardemail/forwardemail.net-selfhosted:latest
     container_name: imap
     network_mode: host
-    hostname: imap.${DOMAIN}
+    hostname: imap.${SERVICE_FQDN_WEB}
+    environment:
+      - DOMAIN=imap.${SERVICE_FQDN_WEB}
     command: ["node", "imap.js"]
     volumes:
       - forward-sql-data:/mnt//mnt/storage_do_1
@@ -93,9 +101,9 @@ services:
       retries: 3
     restart: unless-stopped
     extra_hosts:
-      - "${DOMAIN}:127.0.0.1"
-      - "smtp.${DOMAIN}:127.0.0.1"
-      - "sqlite.${DOMAIN}:127.0.0.1"
+      - "imap.${SERVICE_FQDN_WEB}:127.0.0.1"
+      - "smtp.${SERVICE_FQDN_WEB}:127.0.0.1"
+      - "sqlite.${SERVICE_FQDN_WEB}:127.0.0.1"
     depends_on:
       mongodb:
         condition: service_started
@@ -109,7 +117,9 @@ services:
     image: ghcr.io/forwardemail/forwardemail.net-selfhosted:latest
     container_name: pop3
     network_mode: host
-    hostname: pop3.${DOMAIN}
+    hostname: pop3.${SERVICE_FQDN_WEB}
+    environment:
+      - DOMAIN=pop3.${SERVICE_FQDN_WEB}
     command: ["node", "pop3.js"]
     volumes:
       - forward-sql-data:/mnt//mnt/storage_do_1
@@ -122,8 +132,8 @@ services:
       retries: 3
     restart: unless-stopped
     extra_hosts:
-      - "${DOMAIN}:127.0.0.1"
-      - "smtp.${DOMAIN}:127.0.0.1"
+      - "pop3.${SERVICE_FQDN_WEB}:127.0.0.1"
+      - "smtp.${SERVICE_FQDN_WEB}:127.0.0.1"
     depends_on:
       mongodb:
         condition: service_started
@@ -137,7 +147,9 @@ services:
     image: ghcr.io/forwardemail/forwardemail.net-selfhosted:latest
     container_name: smtp
     network_mode: host
-    hostname: smtp.${DOMAIN}
+    hostname: smtp.${SERVICE_FQDN_WEB}
+    environment:
+      - DOMAIN=smtp.${SERVICE_FQDN_WEB}
     command: ["node", "smtp.js"]
     volumes:
       - forward-ssl-data:/app/ssl/
@@ -149,9 +161,9 @@ services:
       retries: 3
     restart: unless-stopped
     extra_hosts:
-      - "${DOMAIN}:127.0.0.1"
-      - "imap.${DOMAIN}:127.0.0.1"
-      - "sqlite.${DOMAIN}:127.0.0.1"
+      - "smtp.${SERVICE_FQDN_WEB}:127.0.0.1"
+      - "imap.${SERVICE_FQDN_WEB}:127.0.0.1"
+      - "sqlite.${SERVICE_FQDN_WEB}:127.0.0.1"
     depends_on:
       mongodb:
         condition: service_started
@@ -162,17 +174,19 @@ services:
     image: ghcr.io/forwardemail/forwardemail.net-selfhosted:latest
     container_name: smtp_bree
     network_mode: host
-    hostname: smtp.${DOMAIN}
+    hostname: smtp.${SERVICE_FQDN_WEB}
+    environment:
+      - DOMAIN=smtp.${SERVICE_FQDN_WEB}
     command: ["node", "smtp-bree.js"]
     volumes:
       - ./.env:/app/.env
       - forward-ssl-data:/app/ssl/
     restart: unless-stopped
     extra_hosts:
-      - "${DOMAIN}:127.0.0.1"
-      - "smtp.${DOMAIN}:127.0.0.1"
-      - "imap.${DOMAIN}:127.0.0.1"
-      - "sqlite.${DOMAIN}:127.0.0.1"
+      - "${SERVICE_FQDN_WEB}:127.0.0.1"
+      - "smtp.${SERVICE_FQDN_WEB}:127.0.0.1"
+      - "imap.${SERVICE_FQDN_WEB}:127.0.0.1"
+      - "sqlite.${SERVICE_FQDN_WEB}:127.0.0.1"
     depends_on:
       mongodb:
         condition: service_started
@@ -204,7 +218,9 @@ services:
     image: ghcr.io/forwardemail/forwardemail.net-selfhosted:latest
     container_name: sqlite
     network_mode: host
-    hostname: sqlite.${DOMAIN}
+    hostname: sqlite.${SERVICE_FQDN_WEB}
+    environment:
+      - DOMAIN=sqlite.${SERVICE_FQDN_WEB}
     command: ["node", "sqlite.js"]
     volumes:
       - forward-sql-data:/mnt//mnt/storage_do_1
@@ -217,9 +233,9 @@ services:
       retries: 3
     restart: unless-stopped
     extra_hosts:
-      - "${DOMAIN}:127.0.0.1"
-      - "smtp.${DOMAIN}:127.0.0.1"
-      - "imap.${DOMAIN}:127.0.0.1"
+      - "sqlite.${SERVICE_FQDN_WEB}:127.0.0.1"
+      - "smtp.${SERVICE_FQDN_WEB}:127.0.0.1"
+      - "imap.${SERVICE_FQDN_WEB}:127.0.0.1"
     depends_on:
       mongodb:
         condition: service_started
@@ -240,10 +256,10 @@ services:
       - ./.env:/app/.env
     restart: unless-stopped
     extra_hosts:
-      - "${DOMAIN}:127.0.0.1"
-      - "imap.${DOMAIN}:127.0.0.1"
-      - "sqlite.${DOMAIN}:127.0.0.1"
-      - "smtp.${DOMAIN}:127.0.0.1"
+      - "${SERVICE_FQDN_WEB}:127.0.0.1"
+      - "sqlite.${SERVICE_FQDN_WEB}:127.0.0.1"
+      - "imap.${SERVICE_FQDN_WEB}:127.0.0.1"
+      - "smtp.${SERVICE_FQDN_WEB}:127.0.0.1"
     depends_on:
       mongodb:
         condition: service_started
@@ -257,7 +273,9 @@ services:
     container_name: mx
     network_mode: host
     command: ["node", "mx.js"]
-    hostname: mx.${DOMAIN}
+    hostname: mx.${SERVICE_FQDN_WEB}
+    environment:
+      - DOMAIN=mx.${SERVICE_FQDN_WEB}
     volumes:
       - forward-ssl-data:/app/ssl/
       - forward-sql-data:/mnt//mnt/storage_do_1
@@ -269,12 +287,12 @@ services:
       retries: 3
     restart: unless-stopped
     extra_hosts:
-      - "${DOMAIN}:127.0.0.1"
-      - "caldav.${DOMAIN}:127.0.0.1"
-      - "carddav.${DOMAIN}:127.0.0.1"
-      - "imap.${DOMAIN}:127.0.0.1"
-      - "smtp.${DOMAIN}:127.0.0.1"
-      - "sqlite.${DOMAIN}:127.0.0.1"
+      - "mx.${SERVICE_FQDN_WEB}:127.0.0.1"
+      - "caldav.${SERVICE_FQDN_WEB}:127.0.0.1"
+      - "carddav.${SERVICE_FQDN_WEB}:127.0.0.1"
+      - "imap.${SERVICE_FQDN_WEB}:127.0.0.1"
+      - "smtp.${SERVICE_FQDN_WEB}:127.0.0.1"
+      - "sqlite.${SERVICE_FQDN_WEB}:127.0.0.1"
     depends_on:
       mongodb:
         condition: service_started
@@ -287,7 +305,9 @@ services:
     image: ghcr.io/forwardemail/forwardemail.net-selfhosted:latest
     container_name: caldav
     network_mode: host
-    hostname: caldav.${DOMAIN}
+    hostname: caldav.${SERVICE_FQDN_WEB}
+    environment:
+      - DOMAIN=caldav.${SERVICE_FQDN_WEB}
     command: ["node", "caldav.js"]
     volumes:
       - ./.env:/app/.env
@@ -299,10 +319,10 @@ services:
       retries: 3
     restart: unless-stopped
     extra_hosts:
-      - "${DOMAIN}:127.0.0.1"
-      - "smtp.${DOMAIN}:127.0.0.1"
-      - "imap.${DOMAIN}:127.0.0.1"
-      - "sqlite.${DOMAIN}:127.0.0.1"
+      - "caldav.${SERVICE_FQDN_WEB}:127.0.0.1"
+      - "smtp.${SERVICE_FQDN_WEB}:127.0.0.1"
+      - "imap.${SERVICE_FQDN_WEB}:127.0.0.1"
+      - "sqlite.${SERVICE_FQDN_WEB}:127.0.0.1"
     depends_on:
       mongodb:
         condition: service_started
@@ -315,7 +335,9 @@ services:
     image: ghcr.io/forwardemail/forwardemail.net-selfhosted:latest
     container_name: carddav
     network_mode: host
-    hostname: carddav.${DOMAIN}
+    hostname: carddav.${SERVICE_FQDN_WEB}
+    environment:
+      - DOMAIN=carddav.${SERVICE_FQDN_WEB}
     command: ["node", "carddav.js"]
     volumes:
       - ./.env:/app/.env
@@ -327,10 +349,10 @@ services:
       retries: 3
     restart: unless-stopped
     extra_hosts:
-      - "${DOMAIN}:127.0.0.1"
-      - "smtp.${DOMAIN}:127.0.0.1"
-      - "imap.${DOMAIN}:127.0.0.1"
-      - "sqlite.${DOMAIN}:127.0.0.1"
+      - "carddav.${SERVICE_FQDN_WEB}:127.0.0.1"
+      - "smtp.${SERVICE_FQDN_WEB}:127.0.0.1"
+      - "imap.${SERVICE_FQDN_WEB}:127.0.0.1"
+      - "sqlite.${SERVICE_FQDN_WEB}:127.0.0.1"
     depends_on:
       mongodb:
         condition: service_started

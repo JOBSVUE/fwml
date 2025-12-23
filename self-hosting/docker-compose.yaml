@@ -202,6 +202,7 @@ services:
       - NODE_ENV=${NODE_ENV:-production}
       - HTTP_PROTOCOL=${HTTP_PROTOCOL:-http}
       - HELPER_ENCRYPTION_KEY=${HELPER_ENCRYPTION_KEY:-}
+      - SRS_SECRET=${SRS_SECRET:-}
       - MONGO_USER=${MONGO_USER:-}
       - MONGO_PASS=${MONGO_PASS:-}
       - MONGO_HOST=${MONGO_HOST:-mongodb}
@@ -240,6 +241,7 @@ services:
       - NODE_ENV=${NODE_ENV:-production}
       - HTTP_PROTOCOL=${HTTP_PROTOCOL:-http}
       - HELPER_ENCRYPTION_KEY=${HELPER_ENCRYPTION_KEY:-}
+      - SRS_SECRET=${SRS_SECRET:-}
       - MONGO_USER=${MONGO_USER:-}
       - MONGO_PASS=${MONGO_PASS:-}
       - MONGO_HOST=${MONGO_HOST:-mongodb}
@@ -288,6 +290,7 @@ services:
       - NODE_ENV=${NODE_ENV:-production}
       - HTTP_PROTOCOL=${HTTP_PROTOCOL:-http}
       - HELPER_ENCRYPTION_KEY=${HELPER_ENCRYPTION_KEY:-}
+      - SRS_SECRET=${SRS_SECRET:-}
       - MONGO_USER=${MONGO_USER:-}
       - MONGO_PASS=${MONGO_PASS:-}
       - MONGO_HOST=${MONGO_HOST:-mongodb}
@@ -336,6 +339,7 @@ services:
       - NODE_ENV=${NODE_ENV:-production}
       - HTTP_PROTOCOL=${HTTP_PROTOCOL:-http}
       - HELPER_ENCRYPTION_KEY=${HELPER_ENCRYPTION_KEY:-}
+      - SRS_SECRET=${SRS_SECRET:-}
       - MONGO_USER=${MONGO_USER:-}
       - MONGO_PASS=${MONGO_PASS:-}
       - MONGO_HOST=${MONGO_HOST:-mongodb}
@@ -387,6 +391,7 @@ services:
       - NODE_ENV=${NODE_ENV:-production}
       - HTTP_PROTOCOL=${HTTP_PROTOCOL:-http}
       - HELPER_ENCRYPTION_KEY=${HELPER_ENCRYPTION_KEY:-}
+      - SRS_SECRET=${SRS_SECRET:-}
       - MONGO_USER=${MONGO_USER:-}
       - MONGO_PASS=${MONGO_PASS:-}
       - MONGO_HOST=${MONGO_HOST:-mongodb}
@@ -449,6 +454,7 @@ services:
       - NODE_ENV=${NODE_ENV:-production}
       - HTTP_PROTOCOL=${HTTP_PROTOCOL:-http}
       - HELPER_ENCRYPTION_KEY=${HELPER_ENCRYPTION_KEY:-}
+      - SRS_SECRET=${SRS_SECRET:-}
       - MONGO_USER=${MONGO_USER}
       - MONGO_PASS=${MONGO_PASS}
       - MONGO_HOST=${MONGO_HOST:-mongodb}
@@ -496,6 +502,7 @@ services:
       - NODE_ENV=${NODE_ENV:-production}
       - HTTP_PROTOCOL=${HTTP_PROTOCOL:-http}
       - HELPER_ENCRYPTION_KEY=${HELPER_ENCRYPTION_KEY:-}
+      - SRS_SECRET=${SRS_SECRET:-}
       - MONGO_USER=${MONGO_USER}
       - MONGO_PASS=${MONGO_PASS}
       - MONGO_HOST=${MONGO_HOST:-mongodb}
@@ -535,6 +542,7 @@ services:
       - NODE_ENV=${NODE_ENV:-production}
       - HTTP_PROTOCOL=${HTTP_PROTOCOL:-http}
       - HELPER_ENCRYPTION_KEY=${HELPER_ENCRYPTION_KEY:-}
+      - SRS_SECRET=${SRS_SECRET:-}
       - MONGO_USER=${MONGO_USER:-}
       - MONGO_PASS=${MONGO_PASS:-}
       - MONGO_HOST=${MONGO_HOST:-mongodb}
@@ -579,6 +587,7 @@ services:
       - NODE_ENV=${NODE_ENV:-production}
       - HTTP_PROTOCOL=${HTTP_PROTOCOL:-http}
       - HELPER_ENCRYPTION_KEY=${HELPER_ENCRYPTION_KEY:-}
+      - SRS_SECRET=${SRS_SECRET:-}
       - MONGO_USER=${MONGO_USER:-}
       - MONGO_PASS=${MONGO_PASS:-}
       - MONGO_HOST=${MONGO_HOST:-mongodb}
@@ -632,6 +641,7 @@ services:
       - NODE_ENV=${NODE_ENV:-production}
       - HTTP_PROTOCOL=${HTTP_PROTOCOL:-http}
       - HELPER_ENCRYPTION_KEY=${HELPER_ENCRYPTION_KEY:-}
+      - SRS_SECRET=${SRS_SECRET:-}
       - MONGO_USER=${MONGO_USER:-}
       - MONGO_PASS=${MONGO_PASS:-}
       - MONGO_HOST=${MONGO_HOST:-mongodb}

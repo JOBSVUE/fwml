@@ -19,6 +19,7 @@ services:
       retries: 3
     restart: unless-stopped
     environment:
+      - SMTP_USE_TLS=false
       - DOMAIN=${SERVICE_FQDN_WEB}
       - NODE_ENV=${NODE_ENV:-production}
       - HTTP_PROTOCOL=${HTTP_PROTOCOL:-https}
@@ -141,6 +142,7 @@ services:
     container_name: api
     hostname: api.${SERVICE_FQDN_WEB}
     environment:
+      - SMTP_USE_TLS=false
       - DOMAIN=api.${SERVICE_FQDN_WEB}
       - NODE_ENV=${NODE_ENV:-production}
       - HTTP_PROTOCOL=${HTTP_PROTOCOL:-https}
@@ -344,6 +346,7 @@ services:
     container_name: smtp
     hostname: smtp.${SERVICE_FQDN_WEB}
     environment:
+      - SMTP_USE_TLS=false
       - DOMAIN=smtp.${SERVICE_FQDN_WEB}
       - NODE_ENV=${NODE_ENV:-production}
       - HTTP_PROTOCOL=${HTTP_PROTOCOL:-https}

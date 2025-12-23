@@ -434,7 +434,7 @@ services:
   redis:
     image: redis:latest
     container_name: redis
-    command: redis-server --requirepass ${SERVICE_PASSWORD_64_REDIS} --appendonly yes
+    command: redis-server --appendonly yes
     restart: unless-stopped
     volumes:
       - forward-redis-data:/data

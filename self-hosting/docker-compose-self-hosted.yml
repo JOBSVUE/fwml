@@ -16,34 +16,34 @@ services:
       retries: 3
     restart: unless-stopped
     environment:
-      - SMTP_USE_TLS=false
+      - SMTP_USE_TLS=${SMTP_USE_TLS:-false}
       - DOMAIN=${SERVICE_FQDN_WEB}
       - NODE_ENV=${NODE_ENV:-production}
-      - HTTP_PROTOCOL=${HTTP_PROTOCOL:-https}
-      - HELPER_ENCRYPTION_KEY=${SERVICE_BASE64_WEB}
-      - SRS_SECRET=${SERVICE_BASE64_64_WEB}
-      - WEBHOOK_SIGNATURE_KEY=${SERVICE_BASE64_128_WEB}
-      - TXT_ENCRYPTION_KEY=${SERVICE_BASE64_WEB}
-      - MONGO_USER=${SERVICE_USER_MONGO}
-      - MONGO_PASS=${SERVICE_PASSWORD_64_MONGO}
+      - HTTP_PROTOCOL=${HTTP_PROTOCOL:-http}
+      - HELPER_ENCRYPTION_KEY=${HELPER_ENCRYPTION_KEY:-}
+      - SRS_SECRET=${SRS_SECRET:-}
+      - WEBHOOK_SIGNATURE_KEY=${WEBHOOK_SIGNATURE_KEY:-}
+      - TXT_ENCRYPTION_KEY=${TXT_ENCRYPTION_KEY:-}
+      - MONGO_USER=${MONGO_USER:-}
+      - MONGO_PASS=${MONGO_PASS:-}
       - MONGO_HOST=${MONGO_HOST:-mongodb}
       - MONGO_PORT=${MONGO_PORT:-27017}
       - MONGO_NAME=${MONGO_NAME:-forwardemail_production}
-      - MONGO_URI=mongodb://${SERVICE_USER_MONGO}:${SERVICE_PASSWORD_64_MONGO}@mongodb:27017/forwardemail_production?authSource=admin
-      - REDIS_PASSWORD=${SERVICE_PASSWORD_64_REDIS}
+      - MONGO_URI=mongodb://${MONGO_USER}:${MONGO_PASS}@mongodb:27017/forwardemail_production?authSource=admin
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-}
       - REDIS_HOST=${REDIS_HOST:-redis}
       - REDIS_PORT=${REDIS_PORT:-6379}
       - REDIS_USERNAME=${REDIS_USERNAME:-default}
       - WEB_HOST=${SERVICE_FQDN_WEB}
       - WEB_PORT=${WEB_PORT:-3000}
-      - WEB_PROTOCOL=${WEB_PROTOCOL:-https}
+      - WEB_PROTOCOL=${WEB_PROTOCOL:-http}
       - WEB_URL=https://${SERVICE_FQDN_WEB}
       - WEB_SSL_KEY_PATH=${WEB_SSL_KEY_PATH:-/app/ssl/key.pem}
       - WEB_SSL_CERT_PATH=${WEB_SSL_CERT_PATH:-/app/ssl/cert.pem}
-      #- WEB_SSL_CA_PATH=${WEB_SSL_CA_PATH:-/app/ssl/ca.pem}
+      - WEB_SSL_CA_PATH=${WEB_SSL_CA_PATH:-/app/ssl/ca.pem}
       - API_HOST=api.${SERVICE_FQDN_WEB}
       - API_PORT=${API_PORT:-4000}
-      - API_PROTOCOL=${API_PROTOCOL:-https}
+      - API_PROTOCOL=${API_PROTOCOL:-http}
       - API_URL=https://api.${SERVICE_FQDN_WEB}
       - SMTP_HOST=smtp.${SERVICE_FQDN_WEB}
       - SMTP_PORT=${SMTP_PORT:-2587}
@@ -96,13 +96,13 @@ services:
       - APPLE_CALLBACK_URL=https://${SERVICE_FQDN_WEB}/auth/apple/ok
       - GOOGLE_CALLBACK_URL=https://${SERVICE_FQDN_WEB}/auth/google/ok
       - GITHUB_CALLBACK_URL=https://${SERVICE_FQDN_WEB}/auth/github/ok
-      - DKIM_DOMAIN_NAME=${DKIM_DOMAIN_NAME:-${SERVICE_FQDN_WEB}}
+      - DKIM_DOMAIN_NAME=${DKIM_DOMAIN_NAME:-}
       - DKIM_KEY_SELECTOR=${DKIM_KEY_SELECTOR:-default}
       - TURNSTILE_ENABLED=${TURNSTILE_ENABLED:-true}
       - VANITY_DOMAINS=${VANITY_DOMAINS:-mailsire.com,hideaddress.net,secret.fyi,hash.fyi}
       - TXT_RECORD_PREFIX=${TXT_RECORD_PREFIX:-forward-email}
       - MAX_FORWARDED_ADDRESSES=${MAX_FORWARDED_ADDRESSES:-10}
-      - API_SECRETS=${SERVICE_PASSWORD_64_API}
+      - API_SECRETS=${API_SECRETS:-}
       - API_RESTRICTED_SYMBOL=${API_RESTRICTED_SYMBOL:-API_RESTRICTED_SYMBOL}
       - EMAIL_RETENTION=${EMAIL_RETENTION:-30d}
       - LOG_RETENTION=${LOG_RETENTION:-7d}
@@ -114,7 +114,7 @@ services:
       - ENABLE_MONITOR_SERVER=${ENABLE_MONITOR_SERVER:-true}
       - WEB_REDIS_TLS=${WEB_REDIS_TLS:-false}
       - WEB_REDIS_USERNAME=${WEB_REDIS_USERNAME:-default}
-      - WEB_REDIS_PASSWORD=${SERVICE_PASSWORD_64_REDIS}
+      - WEB_REDIS_PASSWORD=${REDIS_PASSWORD:-}
       - WEB_REDIS_HOST=${WEB_REDIS_HOST:-redis}
       - WEB_REDIS_PORT=${WEB_REDIS_PORT:-6379}
       - WEB_REDIS_MAX_RETRY_LOADING_TIME=${WEB_REDIS_MAX_RETRY_LOADING_TIME:-1000}
@@ -142,33 +142,33 @@ services:
       - SMTP_USE_TLS=false
       - DOMAIN=api.${SERVICE_FQDN_WEB}
       - NODE_ENV=${NODE_ENV:-production}
-      - HTTP_PROTOCOL=${HTTP_PROTOCOL:-https}
-      - HELPER_ENCRYPTION_KEY=${SERVICE_BASE64_WEB}
-      - SRS_SECRET=${SERVICE_BASE64_64_WEB}
-      - MONGO_USER=${SERVICE_USER_MONGO}
-      - MONGO_PASS=${SERVICE_PASSWORD_64_MONGO}
+      - HTTP_PROTOCOL=${HTTP_PROTOCOL:-http}
+      - HELPER_ENCRYPTION_KEY=${HELPER_ENCRYPTION_KEY:-}
+      - SRS_SECRET=${SRS_SECRET:-}
+      - MONGO_USER=${MONGO_USER:-}
+      - MONGO_PASS=${MONGO_PASS:-}
       - MONGO_HOST=${MONGO_HOST:-mongodb}
       - MONGO_PORT=${MONGO_PORT:-27017}
-      - MONGO_URI=mongodb://${SERVICE_USER_MONGO}:${SERVICE_PASSWORD_64_MONGO}@mongodb:27017/forwardemail_production?authSource=admin
-      - REDIS_PASSWORD=${SERVICE_PASSWORD_64_REDIS}
+      - MONGO_URI=mongodb://${MONGO_USER}:${MONGO_PASS}@mongodb:27017/forwardemail_production?authSource=admin
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-}
       - REDIS_HOST=${REDIS_HOST:-redis}
       - REDIS_PORT=${REDIS_PORT:-6379}
       - REDIS_USERNAME=${REDIS_USERNAME:-default}
       - API_HOST=api.${SERVICE_FQDN_WEB}
       - API_PORT=${API_PORT:-4000}
-      - API_PROTOCOL=${API_PROTOCOL:-https}
+      - API_PROTOCOL=${API_PROTOCOL:-http}
       - API_URL=https://api.${SERVICE_FQDN_WEB}
       - API_SSL_KEY_PATH=${API_SSL_KEY_PATH:-/app/ssl/key.pem}
       - API_SSL_CERT_PATH=${API_SSL_CERT_PATH:-/app/ssl/cert.pem}
-      #- API_SSL_CA_PATH=${API_SSL_CA_PATH:-/app/ssl/ca.pem}
-      - API_SECRETS=${SERVICE_PASSWORD_64_API}
+      - API_SSL_CA_PATH=${API_SSL_CA_PATH:-/app/ssl/ca.pem}
+      - API_SECRETS=${API_SECRETS:-}
       - SMTP_HOST=smtp.${SERVICE_FQDN_WEB}
       - IMAP_HOST=imap.${SERVICE_FQDN_WEB}
       - SEND_EMAIL=${SEND_EMAIL:-false}
       - PREVIEW_EMAIL=${PREVIEW_EMAIL:-true}
       - API_REDIS_TLS=${API_REDIS_TLS:-false}
       - API_REDIS_USERNAME=${API_REDIS_USERNAME:-default}
-      - API_REDIS_PASSWORD=${SERVICE_PASSWORD_64_REDIS}
+      - API_REDIS_PASSWORD=${REDIS_PASSWORD:-}
       - API_REDIS_HOST=${API_REDIS_HOST:-redis}
       - API_REDIS_PORT=${API_REDIS_PORT:-6379}
     command: ["node", "api.js"]
@@ -200,21 +200,21 @@ services:
     environment:
       - DOMAIN=${SERVICE_FQDN_WEB}
       - NODE_ENV=${NODE_ENV:-production}
-      - HTTP_PROTOCOL=${HTTP_PROTOCOL:-https}
-      - HELPER_ENCRYPTION_KEY=${SERVICE_BASE64_WEB}
-      - MONGO_USER=${SERVICE_USER_MONGO}
-      - MONGO_PASS=${SERVICE_PASSWORD_64_MONGO}
+      - HTTP_PROTOCOL=${HTTP_PROTOCOL:-http}
+      - HELPER_ENCRYPTION_KEY=${HELPER_ENCRYPTION_KEY:-}
+      - MONGO_USER=${MONGO_USER:-}
+      - MONGO_PASS=${MONGO_PASS:-}
       - MONGO_HOST=${MONGO_HOST:-mongodb}
       - MONGO_PORT=${MONGO_PORT:-27017}
-      - MONGO_URI=mongodb://${SERVICE_USER_MONGO}:${SERVICE_PASSWORD_64_MONGO}@mongodb:27017/forwardemail_production?authSource=admin
-      - REDIS_PASSWORD=${SERVICE_PASSWORD_64_REDIS}
+      - MONGO_URI=mongodb://${MONGO_USER}:${MONGO_PASS}@mongodb:27017/forwardemail_production?authSource=admin
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-}
       - REDIS_HOST=${REDIS_HOST:-redis}
       - REDIS_PORT=${REDIS_PORT:-6379}
       - REDIS_USERNAME=${REDIS_USERNAME:-default}
-      - BREE_HOST=${BREE_HOST:-localhost}
+      - BREE_HOST=${BREE_HOST:-bree}
       - BREE_REDIS_TLS=${BREE_REDIS_TLS:-false}
       - BREE_REDIS_USERNAME=${BREE_REDIS_USERNAME:-default}
-      - BREE_REDIS_PASSWORD=${SERVICE_PASSWORD_64_REDIS}
+      - BREE_REDIS_PASSWORD=${REDIS_PASSWORD:-}
       - BREE_REDIS_HOST=${BREE_REDIS_HOST:-redis}
       - BREE_REDIS_PORT=${BREE_REDIS_PORT:-6379}
     volumes:
@@ -238,14 +238,14 @@ services:
     environment:
       - DOMAIN=imap.${SERVICE_FQDN_WEB}
       - NODE_ENV=${NODE_ENV:-production}
-      - HTTP_PROTOCOL=${HTTP_PROTOCOL:-https}
-      - HELPER_ENCRYPTION_KEY=${SERVICE_BASE64_WEB}
-      - MONGO_USER=${SERVICE_USER_MONGO}
-      - MONGO_PASS=${SERVICE_PASSWORD_64_MONGO}
+      - HTTP_PROTOCOL=${HTTP_PROTOCOL:-http}
+      - HELPER_ENCRYPTION_KEY=${HELPER_ENCRYPTION_KEY:-}
+      - MONGO_USER=${MONGO_USER:-}
+      - MONGO_PASS=${MONGO_PASS:-}
       - MONGO_HOST=${MONGO_HOST:-mongodb}
       - MONGO_PORT=${MONGO_PORT:-27017}
-      - MONGO_URI=mongodb://${SERVICE_USER_MONGO}:${SERVICE_PASSWORD_64_MONGO}@mongodb:27017/forwardemail_production?authSource=admin
-      - REDIS_PASSWORD=${SERVICE_PASSWORD_64_REDIS}
+      - MONGO_URI=mongodb://${MONGO_USER}:${MONGO_PASS}@mongodb:27017/forwardemail_production?authSource=admin
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-}
       - REDIS_HOST=${REDIS_HOST:-redis}
       - REDIS_PORT=${REDIS_PORT:-6379}
       - REDIS_USERNAME=${REDIS_USERNAME:-default}
@@ -253,7 +253,7 @@ services:
       - IMAP_PORT=${IMAP_PORT:-2993}
       - IMAP_REDIS_TLS=${IMAP_REDIS_TLS:-false}
       - IMAP_REDIS_USERNAME=${IMAP_REDIS_USERNAME:-default}
-      - IMAP_REDIS_PASSWORD=${SERVICE_PASSWORD_64_REDIS}
+      - IMAP_REDIS_PASSWORD=${REDIS_PASSWORD:-}
       - IMAP_REDIS_HOST=${IMAP_REDIS_HOST:-redis}
       - IMAP_REDIS_PORT=${IMAP_REDIS_PORT:-6379}
     command: ["node", "imap.js"]
@@ -286,14 +286,14 @@ services:
     environment:
       - DOMAIN=pop3.${SERVICE_FQDN_WEB}
       - NODE_ENV=${NODE_ENV:-production}
-      - HTTP_PROTOCOL=${HTTP_PROTOCOL:-https}
-      - HELPER_ENCRYPTION_KEY=${SERVICE_BASE64_WEB}
-      - MONGO_USER=${SERVICE_USER_MONGO}
-      - MONGO_PASS=${SERVICE_PASSWORD_64_MONGO}
+      - HTTP_PROTOCOL=${HTTP_PROTOCOL:-http}
+      - HELPER_ENCRYPTION_KEY=${HELPER_ENCRYPTION_KEY:-}
+      - MONGO_USER=${MONGO_USER:-}
+      - MONGO_PASS=${MONGO_PASS:-}
       - MONGO_HOST=${MONGO_HOST:-mongodb}
       - MONGO_PORT=${MONGO_PORT:-27017}
-      - MONGO_URI=mongodb://${SERVICE_USER_MONGO}:${SERVICE_PASSWORD_64_MONGO}@mongodb:27017/forwardemail_production?authSource=admin
-      - REDIS_PASSWORD=${SERVICE_PASSWORD_64_REDIS}
+      - MONGO_URI=mongodb://${MONGO_USER}:${MONGO_PASS}@mongodb:27017/forwardemail_production?authSource=admin
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-}
       - REDIS_HOST=${REDIS_HOST:-redis}
       - REDIS_PORT=${REDIS_PORT:-6379}
       - REDIS_USERNAME=${REDIS_USERNAME:-default}
@@ -301,7 +301,7 @@ services:
       - POP3_PORT=${POP3_PORT:-2995}
       - POP3_REDIS_TLS=${POP3_REDIS_TLS:-false}
       - POP3_REDIS_USERNAME=${POP3_REDIS_USERNAME:-default}
-      - POP3_REDIS_PASSWORD=${SERVICE_PASSWORD_64_REDIS}
+      - POP3_REDIS_PASSWORD=${REDIS_PASSWORD:-}
       - POP3_REDIS_HOST=${POP3_REDIS_HOST:-redis}
       - POP3_REDIS_PORT=${POP3_REDIS_PORT:-6379}
     command: ["node", "pop3.js"]
@@ -331,17 +331,17 @@ services:
     container_name: smtp
     hostname: smtp.${SERVICE_FQDN_WEB}
     environment:
-      - SMTP_USE_TLS=false
+      - SMTP_USE_TLS=${SMTP_USE_TLS:-false}
       - DOMAIN=smtp.${SERVICE_FQDN_WEB}
       - NODE_ENV=${NODE_ENV:-production}
-      - HTTP_PROTOCOL=${HTTP_PROTOCOL:-https}
-      - HELPER_ENCRYPTION_KEY=${SERVICE_BASE64_WEB}
-      - MONGO_USER=${SERVICE_USER_MONGO}
-      - MONGO_PASS=${SERVICE_PASSWORD_64_MONGO}
+      - HTTP_PROTOCOL=${HTTP_PROTOCOL:-http}
+      - HELPER_ENCRYPTION_KEY=${HELPER_ENCRYPTION_KEY:-}
+      - MONGO_USER=${MONGO_USER:-}
+      - MONGO_PASS=${MONGO_PASS:-}
       - MONGO_HOST=${MONGO_HOST:-mongodb}
       - MONGO_PORT=${MONGO_PORT:-27017}
-      - MONGO_URI=mongodb://${SERVICE_USER_MONGO}:${SERVICE_PASSWORD_64_MONGO}@mongodb:27017/forwardemail_production?authSource=admin
-      - REDIS_PASSWORD=${SERVICE_PASSWORD_64_REDIS}
+      - MONGO_URI=mongodb://${MONGO_USER}:${MONGO_PASS}@mongodb:27017/forwardemail_production?authSource=admin
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-}
       - REDIS_HOST=${REDIS_HOST:-redis}
       - REDIS_PORT=${REDIS_PORT:-6379}
       - REDIS_USERNAME=${REDIS_USERNAME:-default}
@@ -355,6 +355,9 @@ services:
       - SMTP_TRANSPORT_SECURE=${SMTP_TRANSPORT_SECURE:-true}
       - SMTP_MESSAGE_MAX_SIZE=${SMTP_MESSAGE_MAX_SIZE:-50MB}
       - MAX_RECIPIENTS=${MAX_RECIPIENTS:-50}
+      - SMTP_SSL_KEY_PATH=${SMTP_SSL_KEY_PATH:-/app/ssl/private.key.pem}
+      - SMTP_SSL_CERT_PATH=${SMTP_SSL_CERT_PATH:-/app/ssl/domain.cert.pem}
+      - SMTP_SSL_CA_PATH=${SMTP_SSL_CA_PATH:-/app/ssl/domain.cert.pem}
     command: ["node", "smtp.js"]
     volumes:
       - /data/docker-volumes/certs/dnides:/app/ssl:ro
@@ -382,14 +385,14 @@ services:
     environment:
       - DOMAIN=smtp.${SERVICE_FQDN_WEB}
       - NODE_ENV=${NODE_ENV:-production}
-      - HTTP_PROTOCOL=${HTTP_PROTOCOL:-https}
-      - HELPER_ENCRYPTION_KEY=${SERVICE_BASE64_WEB}
-      - MONGO_USER=${SERVICE_USER_MONGO}
-      - MONGO_PASS=${SERVICE_PASSWORD_64_MONGO}
+      - HTTP_PROTOCOL=${HTTP_PROTOCOL:-http}
+      - HELPER_ENCRYPTION_KEY=${HELPER_ENCRYPTION_KEY:-}
+      - MONGO_USER=${MONGO_USER:-}
+      - MONGO_PASS=${MONGO_PASS:-}
       - MONGO_HOST=${MONGO_HOST:-mongodb}
       - MONGO_PORT=${MONGO_PORT:-27017}
-      - MONGO_URI=mongodb://${SERVICE_USER_MONGO}:${SERVICE_PASSWORD_64_MONGO}@mongodb:27017/forwardemail_production?authSource=admin
-      - REDIS_PASSWORD=${SERVICE_PASSWORD_64_REDIS}
+      - MONGO_URI=mongodb://${MONGO_USER}:${MONGO_PASS}@mongodb:27017/forwardemail_production?authSource=admin
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-}
       - REDIS_HOST=${REDIS_HOST:-redis}
       - REDIS_PORT=${REDIS_PORT:-6379}
       - REDIS_USERNAME=${REDIS_USERNAME:-default}
@@ -444,14 +447,14 @@ services:
     environment:
       - DOMAIN=sqlite.${SERVICE_FQDN_WEB}
       - NODE_ENV=${NODE_ENV:-production}
-      - HTTP_PROTOCOL=${HTTP_PROTOCOL:-https}
-      - HELPER_ENCRYPTION_KEY=${SERVICE_BASE64_WEB}
-      - MONGO_USER=${SERVICE_USER_MONGO}
-      - MONGO_PASS=${SERVICE_PASSWORD_64_MONGO}
+      - HTTP_PROTOCOL=${HTTP_PROTOCOL:-http}
+      - HELPER_ENCRYPTION_KEY=${HELPER_ENCRYPTION_KEY:-}
+      - MONGO_USER=${MONGO_USER}
+      - MONGO_PASS=${MONGO_PASS}
       - MONGO_HOST=${MONGO_HOST:-mongodb}
       - MONGO_PORT=${MONGO_PORT:-27017}
-      - MONGO_URI=mongodb://${SERVICE_USER_MONGO}:${SERVICE_PASSWORD_64_MONGO}@mongodb:27017/forwardemail_production?authSource=admin
-      - REDIS_PASSWORD=${SERVICE_PASSWORD_64_REDIS}
+      - MONGO_URI=mongodb://${MONGO_USER}:${MONGO_PASS}@mongodb:27017/forwardemail_production?authSource=admin
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-}
       - REDIS_HOST=${REDIS_HOST:-redis}
       - REDIS_PORT=${REDIS_PORT:-6379}
       - REDIS_USERNAME=${REDIS_USERNAME:-default}
@@ -491,14 +494,14 @@ services:
     environment:
       - DOMAIN=sqlite.${SERVICE_FQDN_WEB}
       - NODE_ENV=${NODE_ENV:-production}
-      - HTTP_PROTOCOL=${HTTP_PROTOCOL:-https}
-      - HELPER_ENCRYPTION_KEY=${SERVICE_BASE64_WEB}
-      - MONGO_USER=${SERVICE_USER_MONGO}
-      - MONGO_PASS=${SERVICE_PASSWORD_64_MONGO}
+      - HTTP_PROTOCOL=${HTTP_PROTOCOL:-http}
+      - HELPER_ENCRYPTION_KEY=${HELPER_ENCRYPTION_KEY:-}
+      - MONGO_USER=${MONGO_USER}
+      - MONGO_PASS=${MONGO_PASS}
       - MONGO_HOST=${MONGO_HOST:-mongodb}
       - MONGO_PORT=${MONGO_PORT:-27017}
-      - MONGO_URI=mongodb://${SERVICE_USER_MONGO}:${SERVICE_PASSWORD_64_MONGO}@mongodb:27017/forwardemail_production?authSource=admin
-      - REDIS_PASSWORD=${SERVICE_PASSWORD_64_REDIS}
+      - MONGO_URI=mongodb://${MONGO_USER}:${MONGO_PASS}@mongodb:27017/forwardemail_production?authSource=admin
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-}
       - REDIS_HOST=${REDIS_HOST:-redis}
       - REDIS_PORT=${REDIS_PORT:-6379}
       - REDIS_USERNAME=${REDIS_USERNAME:-default}
@@ -530,14 +533,14 @@ services:
     environment:
       - DOMAIN=mx.${SERVICE_FQDN_WEB}
       - NODE_ENV=${NODE_ENV:-production}
-      - HTTP_PROTOCOL=${HTTP_PROTOCOL:-https}
-      - HELPER_ENCRYPTION_KEY=${SERVICE_BASE64_WEB}
-      - MONGO_USER=${SERVICE_USER_MONGO}
-      - MONGO_PASS=${SERVICE_PASSWORD_64_MONGO}
+      - HTTP_PROTOCOL=${HTTP_PROTOCOL:-http}
+      - HELPER_ENCRYPTION_KEY=${HELPER_ENCRYPTION_KEY:-}
+      - MONGO_USER=${MONGO_USER:-}
+      - MONGO_PASS=${MONGO_PASS:-}
       - MONGO_HOST=${MONGO_HOST:-mongodb}
       - MONGO_PORT=${MONGO_PORT:-27017}
-      - MONGO_URI=mongodb://${SERVICE_USER_MONGO}:${SERVICE_PASSWORD_64_MONGO}@mongodb:27017/forwardemail_production?authSource=admin
-      - REDIS_PASSWORD=${SERVICE_PASSWORD_64_REDIS}
+      - MONGO_URI=mongodb://${MONGO_USER}:${MONGO_PASS}@mongodb:27017/forwardemail_production?authSource=admin
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-}
       - REDIS_HOST=${REDIS_HOST:-redis}
       - REDIS_PORT=${REDIS_PORT:-6379}
       - REDIS_USERNAME=${REDIS_USERNAME:-default}
@@ -574,27 +577,27 @@ services:
     environment:
       - DOMAIN=caldav.${SERVICE_FQDN_WEB}
       - NODE_ENV=${NODE_ENV:-production}
-      - HTTP_PROTOCOL=${HTTP_PROTOCOL:-https}
-      - HELPER_ENCRYPTION_KEY=${SERVICE_BASE64_WEB}
-      - MONGO_USER=${SERVICE_USER_MONGO}
-      - MONGO_PASS=${SERVICE_PASSWORD_64_MONGO}
+      - HTTP_PROTOCOL=${HTTP_PROTOCOL:-http}
+      - HELPER_ENCRYPTION_KEY=${HELPER_ENCRYPTION_KEY:-}
+      - MONGO_USER=${MONGO_USER:-}
+      - MONGO_PASS=${MONGO_PASS:-}
       - MONGO_HOST=${MONGO_HOST:-mongodb}
       - MONGO_PORT=${MONGO_PORT:-27017}
-      - MONGO_URI=mongodb://${SERVICE_USER_MONGO}:${SERVICE_PASSWORD_64_MONGO}@mongodb:27017/forwardemail_production?authSource=admin
-      - REDIS_PASSWORD=${SERVICE_PASSWORD_64_REDIS}
+      - MONGO_URI=mongodb://${MONGO_USER}:${MONGO_PASS}@mongodb:27017/forwardemail_production?authSource=admin
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-}
       - REDIS_HOST=${REDIS_HOST:-redis}
       - REDIS_PORT=${REDIS_PORT:-6379}
       - REDIS_USERNAME=${REDIS_USERNAME:-default}
       - CALDAV_HOST=caldav.${SERVICE_FQDN_WEB}
       - CALDAV_PORT=${CALDAV_PORT:-5000}
-      - CALDAV_PROTOCOL=${CALDAV_PROTOCOL:-https}
+      - CALDAV_PROTOCOL=${CALDAV_PROTOCOL:-http}
       - CALDAV_URL=https://caldav.${SERVICE_FQDN_WEB}
       - CALDAV_SSL_KEY_PATH=${CALDAV_SSL_KEY_PATH:-/app/ssl/key.pem}
       - CALDAV_SSL_CERT_PATH=${CALDAV_SSL_CERT_PATH:-/app/ssl/cert.pem}
-      #- CALDAV_SSL_CA_PATH=${CALDAV_SSL_CA_PATH:-/app/ssl/ca.pem}
+      - CALDAV_SSL_CA_PATH=${CALDAV_SSL_CA_PATH:-/app/ssl/ca.pem}
       - CALDAV_REDIS_TLS=${CALDAV_REDIS_TLS:-false}
       - CALDAV_REDIS_USERNAME=${CALDAV_REDIS_USERNAME:-default}
-      - CALDAV_REDIS_PASSWORD=${SERVICE_PASSWORD_64_REDIS}
+      - CALDAV_REDIS_PASSWORD=${REDIS_PASSWORD:-}
       - CALDAV_REDIS_HOST=${CALDAV_REDIS_HOST:-redis}
       - CALDAV_REDIS_PORT=${CALDAV_REDIS_PORT:-6379}
     command: ["node", "caldav.js"]
@@ -627,27 +630,27 @@ services:
     environment:
       - DOMAIN=carddav.${SERVICE_FQDN_WEB}
       - NODE_ENV=${NODE_ENV:-production}
-      - HTTP_PROTOCOL=${HTTP_PROTOCOL:-https}
-      - HELPER_ENCRYPTION_KEY=${SERVICE_BASE64_WEB}
-      - MONGO_USER=${SERVICE_USER_MONGO}
-      - MONGO_PASS=${SERVICE_PASSWORD_64_MONGO}
+      - HTTP_PROTOCOL=${HTTP_PROTOCOL:-http}
+      - HELPER_ENCRYPTION_KEY=${HELPER_ENCRYPTION_KEY:-}
+      - MONGO_USER=${MONGO_USER:-}
+      - MONGO_PASS=${MONGO_PASS:-}
       - MONGO_HOST=${MONGO_HOST:-mongodb}
       - MONGO_PORT=${MONGO_PORT:-27017}
-      - MONGO_URI=mongodb://${SERVICE_USER_MONGO}:${SERVICE_PASSWORD_64_MONGO}@mongodb:27017/forwardemail_production?authSource=admin
-      - REDIS_PASSWORD=${SERVICE_PASSWORD_64_REDIS}
+      - MONGO_URI=mongodb://${MONGO_USER}:${MONGO_PASS}@mongodb:27017/forwardemail_production?authSource=admin
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-}
       - REDIS_HOST=${REDIS_HOST:-redis}
       - REDIS_PORT=${REDIS_PORT:-6379}
       - REDIS_USERNAME=${REDIS_USERNAME:-default}
       - CARDDAV_HOST=carddav.${SERVICE_FQDN_WEB}
       - CARDDAV_PORT=${CARDDAV_PORT:-6000}
-      - CARDDAV_PROTOCOL=${CARDDAV_PROTOCOL:-https}
+      - CARDDAV_PROTOCOL=${CARDDAV_PROTOCOL:-http}
       - CARDDAV_URL=https://carddav.${SERVICE_FQDN_WEB}
       - CARDDAV_SSL_KEY_PATH=${CARDDAV_SSL_KEY_PATH:-/app/ssl/key.pem}
       - CARDDAV_SSL_CERT_PATH=${CARDDAV_SSL_CERT_PATH:-/app/ssl/cert.pem}
-      #- CARDDAV_SSL_CA_PATH=${CARDDAV_SSL_CA_PATH:-/app/ssl/ca.pem}
+      - CARDDAV_SSL_CA_PATH=${CARDDAV_SSL_CA_PATH:-/app/ssl/ca.pem}
       - CARDDAV_REDIS_TLS=${CARDDAV_REDIS_TLS:-false}
       - CARDDAV_REDIS_USERNAME=${CARDDAV_REDIS_USERNAME:-default}
-      - CARDDAV_REDIS_PASSWORD=${SERVICE_PASSWORD_64_REDIS}
+      - CARDDAV_REDIS_PASSWORD=${REDIS_PASSWORD:-}
       - CARDDAV_REDIS_HOST=${CARDDAV_REDIS_HOST:-redis}
       - CARDDAV_REDIS_PORT=${CARDDAV_REDIS_PORT:-6379}
     command: ["node", "carddav.js"]
